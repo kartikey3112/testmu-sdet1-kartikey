@@ -71,7 +71,9 @@ def generate(module: str, version: str) -> GenerationResult:
     }
     RAW_DIR.mkdir(parents=True, exist_ok=True)
     raw_path = RAW_DIR / f"{stem}.json"
-    raw_path.write_text(json.dumps(record, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    raw_path.write_text(
+        json.dumps(record, indent=2, ensure_ascii=False) + "\n", encoding="utf-8", newline="\n"
+    )
 
     report, _ = validate_text(module, result.content, finish_reason=result.finish_reason)
     report_path = write_report(report, raw_path)
@@ -81,9 +83,9 @@ def generate(module: str, version: str) -> GenerationResult:
 def write_report(report: ValidationReport, raw_path: Path) -> Path:
     stem = raw_path.name.removesuffix(".json")
     report_path = raw_path.with_name(f"{stem}.report.md")
-    report_path.write_text(render_markdown(report, stem), encoding="utf-8")
+    report_path.write_text(render_markdown(report, stem), encoding="utf-8", newline="\n")
     raw_path.with_name(f"{stem}.report.json").write_text(
-        json.dumps(report.to_dict(), indent=2) + "\n", encoding="utf-8"
+        json.dumps(report.to_dict(), indent=2) + "\n", encoding="utf-8", newline="\n"
     )
     return report_path
 
