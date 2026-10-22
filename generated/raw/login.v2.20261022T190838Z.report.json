@@ -1,0 +1,69 @@
+{
+  "module": "login",
+  "truncated": false,
+  "json_error": null,
+  "schema_errors": [],
+  "case_count": 17,
+  "case_count_ok": true,
+  "coverage": {
+    "valid login": {
+      "cases": [
+        "LOGIN-001",
+        "LOGIN-002"
+      ],
+      "positive": 2,
+      "negative_boundary_security": 0
+    },
+    "invalid credentials": {
+      "cases": [
+        "LOGIN-003",
+        "LOGIN-004",
+        "LOGIN-016",
+        "LOGIN-017"
+      ],
+      "positive": 1,
+      "negative_boundary_security": 3
+    },
+    "forgot password": {
+      "cases": [
+        "LOGIN-005",
+        "LOGIN-006",
+        "LOGIN-007",
+        "LOGIN-008"
+      ],
+      "positive": 1,
+      "negative_boundary_security": 3
+    },
+    "session expiry": {
+      "cases": [
+        "LOGIN-009",
+        "LOGIN-010",
+        "LOGIN-011"
+      ],
+      "positive": 1,
+      "negative_boundary_security": 2
+    },
+    "brute-force lockout": {
+      "cases": [
+        "LOGIN-012",
+        "LOGIN-013",
+        "LOGIN-014",
+        "LOGIN-015"
+      ],
+      "positive": 2,
+      "negative_boundary_security": 2
+    }
+  },
+  "coverage_gaps": [
+    "'valid login' has no negative/boundary/security case"
+  ],
+  "coverage_map_issues": [],
+  "id_issues": [],
+  "duplicate_titles": [],
+  "vague_expectations": [],
+  "hardcoded_credentials": [],
+  "typographic_characters": [],
+  "open_questions": [],
+  "automation_candidates": 17,
+  "passed": false
+}
