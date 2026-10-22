@@ -4,7 +4,7 @@ MODULE ?= login
 VERSION ?= v1
 RUN ?=
 
-.PHONY: setup app test test-ui test-api generate classify eval lint
+.PHONY: setup app reset-db test test-ui test-api generate classify eval lint
 
 setup:
 	$(PY) -m pip install -r requirements.txt
@@ -12,6 +12,9 @@ setup:
 
 app:
 	$(PY) -m uvicorn app.main:app --reload
+
+reset-db:
+	$(PY) -m app.seed
 
 test:
 	$(PY) -m pytest

@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block title %}Dashboard · TestMu Lite{% endblock %}
+{% block body_class %}app-page{% endblock %}
+{% block body %}
+<header class="topbar">
+  <button type="button" class="menu-toggle" aria-controls="sidebar" aria-expanded="false"
+          data-testid="menu-toggle">Menu</button>
+  <span class="brand">TestMu Lite</span>
+</header>
+<div class="layout">
+  <nav id="sidebar" class="sidebar" aria-label="Main" data-testid="sidebar">
+    <a href="/dashboard" aria-current="page" data-testid="nav-dashboard">Dashboard</a>
+    <div class="account">
+      <span data-testid="user-name">{{ user.name }}</span>
+      <span class="role" data-testid="user-role">{{ user.role }}</span>
+      <form method="post" action="/logout">
+        <button type="submit" data-testid="logout">Sign out</button>
+      </form>
+    </div>
+  </nav>
+
+  <main class="content">
+    <h1>Dashboard</h1>
+    <div class="widgets" data-testid="widget-grid">
+
+      <section class="widget" data-testid="widget-total-test-cases" data-widget="total-test-cases"
+               data-state="loading" aria-labelledby="w-total-title">
+        <h2 id="w-total-title">Total test cases</h2>
+        <p class="value" data-testid="widget-value"></p>
+        <p class="error" role="alert" data-testid="widget-error" hidden></p>
+      </section>
+
+      <section class="widget" data-testid="widget-pass-rate" data-widget="pass-rate"
+               data-state="loading" aria-labelledby="w-pass-title">
+        <h2 id="w-pass-title">Pass rate (latest run)</h2>
+        <p class="value" data-testid="widget-value"></p>
+        <p class="caption" data-testid="widget-caption"></p>
+        <p class="error" role="alert" data-testid="widget-error" hidden></p>
+      </section>
+
+      <section class="widget wide" data-testid="widget-recent-runs" data-widget="recent-runs"
+               data-state="loading" aria-labelledby="w-runs-title">
+        <h2 id="w-runs-title">Recent runs</h2>
+        <div class="filters" data-testid="runs-filters">
+          <label>Status
+            <select name="status" data-testid="runs-filter-status">
+              <option value="">All</option>
+              <option value="passed">Passed</option>
+              <option value="failed">Failed</option>
+            </select>
+          </label>
+          <label>From
+            <input type="date" name="date_from" data-testid="runs-filter-from">
+          </label>
+          <label>To
+            <input type="date" name="date_to" data-testid="runs-filter-to">
+          </label>
+          <label>Sort by
+            <select name="sort" data-testid="runs-sort">
+              <option value="">Default</option>
+              <option value="date">Date</option>
+              <option value="pass_rate">Pass rate</option>
+            </select>
+          </label>
+          <label>Order
+            <select name="order" data-testid="runs-order">
+              <option value="desc">Descending</option>
+              <option value="asc">Ascending</option>
+            </select>
+          </label>
+        </div>
+        <div class="table-wrap">
+        <table data-testid="runs-table">
+          <thead>
+            <tr><th scope="col">Run</th><th scope="col">Date</th><th scope="col">Passed</th>
+                <th scope="col">Failed</th><th scope="col">Pass rate</th><th scope="col">Status</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        </div>
+        <p class="empty" data-testid="runs-empty" hidden>No runs match these filters.</p>
+        <p class="error" role="alert" data-testid="widget-error" hidden></p>
+      </section>
+
+      {% if is_admin %}
+      <section class="widget" data-testid="widget-flaky-tests" data-widget="flaky-tests"
+               data-state="loading" aria-labelledby="w-flaky-title">
+        <h2 id="w-flaky-title">Flaky tests</h2>
+        <div class="table-wrap">
+        <table data-testid="flaky-table">
+          <thead><tr><th scope="col">Test</th><th scope="col">Flips</th><th scope="col">Last seen</th></tr></thead>
+          <tbody></tbody>
+        </table>
+        </div>
+        <p class="error" role="alert" data-testid="widget-error" hidden></p>
+      </section>
+
+      <section class="widget" data-testid="widget-team-activity" data-widget="team-activity"
+               data-state="loading" aria-labelledby="w-activity-title">
+        <h2 id="w-activity-title">Team activity</h2>
+        <ul class="activity" data-testid="activity-list"></ul>
+        <p class="error" role="alert" data-testid="widget-error" hidden></p>
+      </section>
+      {% endif %}
+
+    </div>
+  </main>
+</div>
+<script src="{{ url_for('static', path='dashboard.js') }}"></script>
+{% endblock %}

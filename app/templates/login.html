@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Sign in · TestMu Lite{% endblock %}
+{% block body_class %}auth-page{% endblock %}
+{% block body %}
+<main class="auth-card">
+  <h1>Sign in to TestMu Lite</h1>
+  {% if notice %}<p class="notice" role="status" data-testid="login-notice">{{ notice }}</p>{% endif %}
+  {% if error %}<p class="error" role="alert" data-testid="login-error">{{ error }}</p>{% endif %}
+  <form method="post" action="/login" novalidate data-testid="login-form">
+    <label for="email">Email</label>
+    <input id="email" name="email" type="email" autocomplete="username" value="{{ email }}" data-testid="login-email">
+    <label for="password">Password</label>
+    <input id="password" name="password" type="password" autocomplete="current-password" data-testid="login-password">
+    <button type="submit" data-testid="login-submit">Sign in</button>
+  </form>
+  <a href="/forgot-password" data-testid="forgot-password-link">Forgot password?</a>
+</main>
+{% endblock %}
