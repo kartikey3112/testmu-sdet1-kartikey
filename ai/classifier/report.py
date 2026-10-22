@@ -32,7 +32,8 @@ _ENABLED_KEY = pytest.StashKey[bool]()
 
 
 def _cell(text: str) -> str:
-    return html.escape(text).replace("|", "\\|").replace("\n", " ")
+    """Make text safe inside a Markdown table cell (not HTML-escaped: this is Markdown)."""
+    return text.replace("|", "\\|").replace("\n", " ")
 
 
 def render_markdown(report: "ClassificationReport") -> str:
