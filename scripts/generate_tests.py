@@ -2,6 +2,7 @@
 
   python -m scripts.generate_tests --module login --version v1
   python -m scripts.generate_tests --revalidate generated/raw/login.v1.<timestamp>.json
+  python -m scripts.generate_tests --accept generated/raw/login.v4.<timestamp>.json --note "..."
 """
 
 import argparse
@@ -9,6 +10,7 @@ import sys
 from pathlib import Path
 
 from ai.llm_client import LLMConfigError, LLMError
+from ai.testgen.accept import accept
 from ai.testgen.runner import ROOT, generate, prompt_path, revalidate
 from ai.testgen.schema import COVERAGE_AREAS
 
@@ -19,8 +21,15 @@ def main() -> int:
     parser.add_argument("--module", choices=sorted(COVERAGE_AREAS))
     parser.add_argument("--version", help="prompt version, e.g. v1")
     parser.add_argument("--revalidate", type=Path, help="validate a saved raw response again")
+    parser.add_argument("--accept", type=Path,
+                        help="copy a reviewed raw response to generated/<module>.json")
+    parser.add_argument("--note", default="", help="why this run was accepted (with --accept)")
     args = parser.parse_args()
 
+    if args.accept:
+        out = accept(args.accept, args.note)
+        print(f"Accepted {args.accept} -> {out.resolve().relative_to(ROOT)}")
+        return 0
     if args.revalidate:
         result = revalidate(args.revalidate)
     else:

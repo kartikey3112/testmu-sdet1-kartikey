@@ -1,0 +1,439 @@
+{
+  "cases": [
+    {
+      "id": "LOGIN-001",
+      "module": "login",
+      "title": "Admin user can sign in with correct credentials",
+      "coverage_area": "valid login",
+      "type": "positive",
+      "priority": "P0",
+      "preconditions": [
+        "POST /_test/reset"
+      ],
+      "test_data": {
+        "email": "admin@testmu.local",
+        "password": "{{admin_password}}"
+      },
+      "steps": [
+        "Navigate to GET /login",
+        "Enter email admin@testmu.local into field login-email",
+        "Enter password {{admin_password}} into field login-password",
+        "Click button login-submit"
+      ],
+      "expected_results": [
+        "Response HTTP 303 redirect to /dashboard",
+        "Set HttpOnly SameSite=Lax cookie named session",
+        "Dashboard element user-role contains text admin"
+      ],
+      "automation_candidate": true,
+      "notes": ""
+    },
+    {
+      "id": "LOGIN-002",
+      "module": "login",
+      "title": "Login trims whitespace and lower‑cases email address",
+      "coverage_area": "valid login",
+      "type": "boundary",
+      "priority": "P1",
+      "preconditions": [
+        "POST /_test/reset"
+      ],
+      "test_data": {
+        "email": "  ADMIN@TESTMU.LOCAL  ",
+        "password": "{{admin_password}}"
+      },
+      "steps": [
+        "Navigate to GET /login",
+        "Enter email with leading/trailing spaces and uppercase into login-email",
+        "Enter password {{admin_password}} into login-password",
+        "Click button login-submit"
+      ],
+      "expected_results": [
+        "Response HTTP 303 redirect to /dashboard",
+        "Dashboard element user-role contains text admin"
+      ],
+      "automation_candidate": true,
+      "notes": ""
+    },
+    {
+      "id": "LOGIN-003",
+      "module": "login",
+      "title": "Sign‑in fails with incorrect password",
+      "coverage_area": "valid login",
+      "type": "negative",
+      "priority": "P1",
+      "preconditions": [
+        "POST /_test/reset"
+      ],
+      "test_data": {
+        "email": "viewer@testmu.local",
+        "password": "wrongpass"
+      },
+      "steps": [
+        "Navigate to GET /login",
+        "Enter email viewer@testmu.local into login-email",
+        "Enter password wrongpass into login-password",
+        "Click button login-submit"
+      ],
+      "expected_results": [
+        "Response HTTP 401",
+        "Element login-error contains text \"Invalid email or password.\""
+      ],
+      "automation_candidate": true,
+      "notes": ""
+    },
+    {
+      "id": "LOGIN-004",
+      "module": "login",
+      "title": "After a failed attempt, correct credentials still allow sign‑in",
+      "coverage_area": "invalid credentials",
+      "type": "positive",
+      "priority": "P0",
+      "preconditions": [
+        "POST /_test/reset"
+      ],
+      "test_data": {
+        "email": "viewer@testmu.local",
+        "wrong_password": "bad",
+        "correct_password": "{{viewer_password}}"
+      },
+      "steps": [
+        "Navigate to GET /login",
+        "Enter email viewer@testmu.local into login-email",
+        "Enter password bad into login-password",
+        "Click button login-submit",
+        "Observe login-error with text \"Invalid email or password.\"",
+        "Enter password {{viewer_password}} into login-password (same page)",
+        "Click button login-submit again"
+      ],
+      "expected_results": [
+        "Second response HTTP 303 redirect to /dashboard",
+        "Dashboard element user-role contains text viewer"
+      ],
+      "automation_candidate": true,
+      "notes": ""
+    },
+    {
+      "id": "LOGIN-005",
+      "module": "login",
+      "title": "Sign‑in with unknown email returns generic error",
+      "coverage_area": "invalid credentials",
+      "type": "negative",
+      "priority": "P1",
+      "preconditions": [
+        "POST /_test/reset"
+      ],
+      "test_data": {
+        "email": "unknown@example.com",
+        "password": "any"
+      },
+      "steps": [
+        "Navigate to GET /login",
+        "Enter email unknown@example.com into login-email",
+        "Enter password any into login-password",
+        "Click button login-submit"
+      ],
+      "expected_results": [
+        "Response HTTP 401",
+        "Element login-error contains text \"Invalid email or password.\""
+      ],
+      "automation_candidate": true,
+      "notes": ""
+    },
+    {
+      "id": "LOGIN-006",
+      "module": "login",
+      "title": "User receives reset link and can set a new password",
+      "coverage_area": "forgot password",
+      "type": "positive",
+      "priority": "P0",
+      "preconditions": [
+        "POST /_test/reset"
+      ],
+      "test_data": {
+        "email": "viewer@testmu.local",
+        "new_password": "newStrongPass1"
+      },
+      "steps": [
+        "Navigate to GET /forgot-password",
+        "Enter email viewer@testmu.local into forgot-email",
+        "Click button forgot-submit",
+        "GET /_test/outbox?to=viewer@testmu.local and extract reset link token",
+        "Navigate to GET /reset-password?token=<extracted token>",
+        "Enter new password newStrongPass1 into reset-password",
+        "Enter same password into reset-confirm-password",
+        "Click button reset-submit"
+      ],
+      "expected_results": [
+        "Response HTTP 303 redirect to /login?reason=reset",
+        "Element login-notice contains text \"Your password has been updated. Please sign in.\"",
+        "Subsequent sign‑in with new password succeeds (HTTP 303 to /dashboard)"
+      ],
+      "automation_candidate": true,
+      "notes": ""
+    },
+    {
+      "id": "LOGIN-007",
+      "module": "login",
+      "title": "Reset link expires exactly after 30 minutes",
+      "coverage_area": "forgot password",
+      "type": "boundary",
+      "priority": "P2",
+      "preconditions": [
+        "POST /_test/reset"
+      ],
+      "test_data": {
+        "email": "admin@testmu.local"
+      },
+      "steps": [
+        "Navigate to GET /forgot-password",
+        "Enter email admin@testmu.local into forgot-email",
+        "Click button forgot-submit",
+        "GET /_test/outbox?to=admin@testmu.local and extract token",
+        "POST /_test/clock with {\"advance_seconds\":1800}",
+        "Navigate to GET /reset-password?token=<extracted token>"
+      ],
+      "expected_results": [
+        "Response HTTP 400",
+        "Element reset-error contains text \"This reset link is invalid or has expired.\"",
+        "No password reset form is displayed"
+      ],
+      "automation_candidate": true,
+      "notes": ""
+    },
+    {
+      "id": "LOGIN-008",
+      "module": "login",
+      "title": "Forgot‑password does not reveal whether email exists",
+      "coverage_area": "forgot password",
+      "type": "security",
+      "priority": "P0",
+      "preconditions": [
+        "POST /_test/reset"
+      ],
+      "test_data": {
+        "email": "nonexistent@testmu.local"
+      },
+      "steps": [
+        "Navigate to GET /forgot-password",
+        "Enter email nonexistent@testmu.local into forgot-email",
+        "Click button forgot-submit"
+      ],
+      "expected_results": [
+        "Element forgot-confirmation contains text \"If an account exists for that email, we've sent a password reset link.\"",
+        "GET /_test/outbox?to=nonexistent@testmu.local returns empty list"
+      ],
+      "automation_candidate": true,
+      "notes": ""
+    },
+    {
+      "id": "LOGIN-009",
+      "module": "login",
+      "title": "Active session allows access to dashboard",
+      "coverage_area": "session expiry",
+      "type": "positive",
+      "priority": "P0",
+      "preconditions": [
+        "POST /_test/reset"
+      ],
+      "test_data": {
+        "email": "admin@testmu.local",
+        "password": "{{admin_password}}"
+      },
+      "steps": [
+        "Navigate to GET /login",
+        "Enter email admin@testmu.local and password {{admin_password}} and submit",
+        "Obtain session cookie from response",
+        "Within less than 1800 seconds, navigate to GET /dashboard with session cookie"
+      ],
+      "expected_results": [
+        "Response HTTP 200 (dashboard page)",
+        "Element user-role contains text admin"
+      ],
+      "automation_candidate": true,
+      "notes": ""
+    },
+    {
+      "id": "LOGIN-010",
+      "module": "login",
+      "title": "Session expires exactly after 1800 seconds",
+      "coverage_area": "session expiry",
+      "type": "boundary",
+      "priority": "P2",
+      "preconditions": [
+        "POST /_test/reset"
+      ],
+      "test_data": {
+        "email": "viewer@testmu.local",
+        "password": "{{viewer_password}}"
+      },
+      "steps": [
+        "Sign in as viewer@testmu.local to obtain session cookie",
+        "POST /_test/clock with {\"advance_seconds\":1800}",
+        "Navigate to GET /dashboard with session cookie"
+      ],
+      "expected_results": [
+        "Response HTTP 303 redirect to /login?reason=expired",
+        "Element login-notice contains text \"Your session has expired. Please sign in again.\""
+      ],
+      "automation_candidate": true,
+      "notes": ""
+    },
+    {
+      "id": "LOGIN-011",
+      "module": "login",
+      "title": "Accessing dashboard without a session redirects to login",
+      "coverage_area": "session expiry",
+      "type": "negative",
+      "priority": "P1",
+      "preconditions": [
+        "POST /_test/reset"
+      ],
+      "test_data": {},
+      "steps": [
+        "Navigate to GET /dashboard without any session cookie"
+      ],
+      "expected_results": [
+        "Response HTTP 303 redirect to /login",
+        "Login page shows no login-notice element"
+      ],
+      "automation_candidate": true,
+      "notes": ""
+    },
+    {
+      "id": "LOGIN-012",
+      "module": "login",
+      "title": "Fifth consecutive failed login locks the account",
+      "coverage_area": "brute-force lockout",
+      "type": "negative",
+      "priority": "P0",
+      "preconditions": [
+        "POST /_test/reset"
+      ],
+      "test_data": {
+        "email": "admin@testmu.local",
+        "wrong_password": "badpass"
+      },
+      "steps": [
+        "Repeat 5 times: navigate to GET /login, enter email admin@testmu.local, enter password badpass, click login-submit"
+      ],
+      "expected_results": [
+        "On the fifth attempt response HTTP 423",
+        "Element login-error contains text \"Your account is locked after too many failed sign-in attempts. Try again later.\""
+      ],
+      "automation_candidate": true,
+      "notes": ""
+    },
+    {
+      "id": "LOGIN-013",
+      "module": "login",
+      "title": "Correct password is rejected while account is locked",
+      "coverage_area": "brute-force lockout",
+      "type": "security",
+      "priority": "P0",
+      "preconditions": [
+        "POST /_test/reset"
+      ],
+      "test_data": {
+        "email": "viewer@testmu.local",
+        "wrong_password": "bad",
+        "correct_password": "{{viewer_password}}"
+      },
+      "steps": [
+        "Perform 5 consecutive failed attempts with wrong password for viewer@testmu.local to trigger lock",
+        "Immediately attempt login with correct password {{viewer_password}}",
+        "Click button login-submit"
+      ],
+      "expected_results": [
+        "Response HTTP 423",
+        "Element login-error contains text \"Your account is locked after too many failed sign-in attempts. Try again later.\""
+      ],
+      "automation_candidate": true,
+      "notes": ""
+    },
+    {
+      "id": "LOGIN-014",
+      "module": "login",
+      "title": "Account unlocks exactly after 15 minutes lockout period",
+      "coverage_area": "brute-force lockout",
+      "type": "boundary",
+      "priority": "P2",
+      "preconditions": [
+        "POST /_test/reset"
+      ],
+      "test_data": {
+        "email": "admin@testmu.local",
+        "wrong_password": "bad",
+        "correct_password": "{{admin_password}}"
+      },
+      "steps": [
+        "Perform 5 failed attempts to lock admin account",
+        "POST /_test/clock with {\"advance_seconds\":900}",
+        "Attempt login with correct password {{admin_password}}"
+      ],
+      "expected_results": [
+        "Response HTTP 303 redirect to /dashboard",
+        "Dashboard element user-role contains text admin"
+      ],
+      "automation_candidate": true,
+      "notes": ""
+    },
+    {
+      "id": "LOGIN-015",
+      "module": "login",
+      "title": "Successful login after lockout period clears failure count",
+      "coverage_area": "brute-force lockout",
+      "type": "positive",
+      "priority": "P1",
+      "preconditions": [
+        "POST /_test/reset"
+      ],
+      "test_data": {
+        "email": "viewer@testmu.local",
+        "wrong_password": "bad",
+        "correct_password": "{{viewer_password}}"
+      },
+      "steps": [
+        "Perform 5 failed attempts to lock viewer account",
+        "POST /_test/clock with {\"advance_seconds\":901}",
+        "Attempt login with correct password {{viewer_password}}",
+        "Observe successful sign‑in",
+        "Immediately attempt another login with wrong password bad"
+      ],
+      "expected_results": [
+        "First post‑lock attempt response HTTP 303 redirect to /dashboard",
+        "Second immediate wrong password attempt response HTTP 401"
+      ],
+      "automation_candidate": true,
+      "notes": ""
+    }
+  ],
+  "coverage_map": {
+    "valid login": [
+      "LOGIN-001",
+      "LOGIN-002",
+      "LOGIN-003"
+    ],
+    "invalid credentials": [
+      "LOGIN-004",
+      "LOGIN-005"
+    ],
+    "forgot password": [
+      "LOGIN-006",
+      "LOGIN-007",
+      "LOGIN-008"
+    ],
+    "session expiry": [
+      "LOGIN-009",
+      "LOGIN-010",
+      "LOGIN-011"
+    ],
+    "brute-force lockout": [
+      "LOGIN-012",
+      "LOGIN-013",
+      "LOGIN-014",
+      "LOGIN-015"
+    ]
+  },
+  "open_questions": []
+}

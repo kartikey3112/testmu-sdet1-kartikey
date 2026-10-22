@@ -1,0 +1,32 @@
+{
+  "api": {
+    "case_count": 24,
+    "model": "openai/gpt-oss-120b",
+    "note": "Validation passed.",
+    "prompt_file": "prompts/api.v4.md",
+    "prompt_sha256": "fed3582545ffc8b6c562b9f9db9acb0bf7b75c9d14c8041224ed56636bce0e80",
+    "prompt_version": "v4",
+    "raw_response": "generated/raw/api.v4.20261022T193001Z.json",
+    "timestamp_utc": "20261022T193001Z"
+  },
+  "dashboard": {
+    "case_count": 16,
+    "model": "openai/gpt-oss-120b",
+    "note": "Validation passed. Review: DASH-008 expects the error code in widget-error (UI shows the message); DASH-010 is filed under filter/sort.",
+    "prompt_file": "prompts/dashboard.v3.md",
+    "prompt_sha256": "3f3b4a5a772895b5801f5fcac9fa0bac4351fe04141b31d35989a59b75b2d39c",
+    "prompt_version": "v3",
+    "raw_response": "generated/raw/dashboard.v3.20261022T191908Z.json",
+    "timestamp_utc": "20261022T191908Z"
+  },
+  "login": {
+    "case_count": 15,
+    "model": "openai/gpt-oss-120b",
+    "note": "Coverage complete. Validator flags U+2011 in descriptive text of LOGIN-006 and LOGIN-015 only; quoted messages are ASCII. LOGIN-003 sits under valid login although it is an invalid-credentials case.",
+    "prompt_file": "prompts/login.v4.md",
+    "prompt_sha256": "0597696dc75db6d038028491ba6aef84107df4fe30eff124e14a84e7cfc5f7f5",
+    "prompt_version": "v4",
+    "raw_response": "generated/raw/login.v4.20261022T192917Z.json",
+    "timestamp_utc": "20261022T192917Z"
+  }
+}

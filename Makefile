@@ -4,7 +4,7 @@ MODULE ?= login
 VERSION ?= v1
 RUN ?=
 
-.PHONY: setup app reset-db test test-ui test-api generate classify eval lint
+.PHONY: setup app reset-db test test-ui test-api generate gherkin classify eval lint
 
 setup:
 	$(PY) -m pip install -r requirements.txt
@@ -27,6 +27,9 @@ test-api:
 
 generate:
 	$(PY) -m scripts.generate_tests --module $(MODULE) --version $(VERSION)
+
+gherkin:
+	$(PY) -m ai.testgen.to_gherkin
 
 classify:
 	$(PY) -m ai.classifier.classify --run $(RUN)
