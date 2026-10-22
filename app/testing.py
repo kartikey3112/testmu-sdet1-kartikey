@@ -11,7 +11,7 @@ from app.api import rate_limiter
 from app.db import get_db
 from app.errors import ApiError
 from app.seed import reset_database
-from app.settings import clock
+from app.settings import clock, settings
 
 router = APIRouter(prefix="/_test", tags=["test-only"])
 Db = Annotated[sqlite3.Connection, Depends(get_db)]
@@ -25,6 +25,26 @@ class FaultsRequest(BaseModel):
 class ClockRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
     advance_seconds: float = Field(gt=0)
+
+
+def _read_sessions() -> list[tuple]:
+    # Direct connection on purpose: reset must work even while ENV_DB_UNAVAILABLE is active.
+    conn = sqlite3.connect(settings.db_path)
+    try:
+        return conn.execute("SELECT token, user_id, expires_at FROM sessions").fetchall()
+    finally:
+        conn.close()
+
+
+def _restore_sessions(sessions: list[tuple]) -> None:
+    conn = sqlite3.connect(settings.db_path)
+    try:
+        conn.executemany(
+            "INSERT INTO sessions (token, user_id, expires_at) VALUES (?, ?, ?)", sessions
+        )
+        conn.commit()
+    finally:
+        conn.close()
 
 
 def _faults_state() -> dict:
@@ -71,9 +91,16 @@ def advance_clock(body: ClockRequest) -> dict:
 
 
 @router.post("/reset")
-def reset() -> dict:
-    """Reload seed data and restore faults, clock and rate limits to their startup state."""
+def reset(keep_sessions: bool = False) -> dict:
+    """Reload seed data and restore faults, clock and rate limits to their startup state.
+
+    keep_sessions=true carries existing login sessions over, so the test framework can reuse
+    cached browser logins between tests. Seed user IDs are stable, so the sessions stay valid.
+    """
+    sessions = _read_sessions() if keep_sessions else []
     reset_database()
+    if sessions:
+        _restore_sessions(sessions)
     faults.reset()
     clock.reset()
     rate_limiter.reset()
