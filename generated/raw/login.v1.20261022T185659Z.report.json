@@ -1,0 +1,77 @@
+{
+  "module": "login",
+  "truncated": false,
+  "json_error": null,
+  "schema_errors": [],
+  "case_count": 18,
+  "case_count_ok": true,
+  "coverage": {
+    "valid login": {
+      "cases": [
+        "LOGIN-001",
+        "LOGIN-002"
+      ],
+      "positive": 1,
+      "negative_boundary_security": 1
+    },
+    "invalid credentials": {
+      "cases": [
+        "LOGIN-003",
+        "LOGIN-004",
+        "LOGIN-005"
+      ],
+      "positive": 0,
+      "negative_boundary_security": 3
+    },
+    "forgot password": {
+      "cases": [
+        "LOGIN-006",
+        "LOGIN-007",
+        "LOGIN-008",
+        "LOGIN-009",
+        "LOGIN-010",
+        "LOGIN-011"
+      ],
+      "positive": 2,
+      "negative_boundary_security": 4
+    },
+    "session expiry": {
+      "cases": [
+        "LOGIN-012",
+        "LOGIN-013",
+        "LOGIN-014"
+      ],
+      "positive": 1,
+      "negative_boundary_security": 2
+    },
+    "brute-force lockout": {
+      "cases": [
+        "LOGIN-015",
+        "LOGIN-016",
+        "LOGIN-017",
+        "LOGIN-018"
+      ],
+      "positive": 1,
+      "negative_boundary_security": 3
+    }
+  },
+  "coverage_gaps": [
+    "'invalid credentials' has no positive case"
+  ],
+  "coverage_map_issues": [],
+  "id_issues": [],
+  "duplicate_titles": [],
+  "vague_expectations": [],
+  "hardcoded_credentials": [],
+  "typographic_characters": [
+    "LOGIN-002: U+2011",
+    "LOGIN-015: U+2011",
+    "LOGIN-016: U+2011",
+    "LOGIN-018: U+2011"
+  ],
+  "open_questions": [
+    "What HTTP status code is used for the successful password\u2011reset redirect to /login?reason=reset?"
+  ],
+  "automation_candidates": 18,
+  "passed": false
+}

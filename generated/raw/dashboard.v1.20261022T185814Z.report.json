@@ -1,0 +1,67 @@
+{
+  "module": "dashboard",
+  "truncated": false,
+  "json_error": null,
+  "schema_errors": [],
+  "case_count": 15,
+  "case_count_ok": true,
+  "coverage": {
+    "widget loading": {
+      "cases": [
+        "DASH-001",
+        "DASH-002",
+        "DASH-012"
+      ],
+      "positive": 1,
+      "negative_boundary_security": 2
+    },
+    "data accuracy": {
+      "cases": [
+        "DASH-003",
+        "DASH-004",
+        "DASH-013"
+      ],
+      "positive": 1,
+      "negative_boundary_security": 2
+    },
+    "filter/sort behavior": {
+      "cases": [
+        "DASH-005",
+        "DASH-006",
+        "DASH-007",
+        "DASH-014"
+      ],
+      "positive": 1,
+      "negative_boundary_security": 3
+    },
+    "responsive layout": {
+      "cases": [
+        "DASH-008",
+        "DASH-009"
+      ],
+      "positive": 1,
+      "negative_boundary_security": 1
+    },
+    "permission-based visibility": {
+      "cases": [
+        "DASH-010",
+        "DASH-011",
+        "DASH-015"
+      ],
+      "positive": 1,
+      "negative_boundary_security": 2
+    }
+  },
+  "coverage_gaps": [],
+  "coverage_map_issues": [],
+  "id_issues": [],
+  "duplicate_titles": [],
+  "vague_expectations": [],
+  "hardcoded_credentials": [],
+  "typographic_characters": [
+    "DASH-008: U+2011"
+  ],
+  "open_questions": [],
+  "automation_candidates": 15,
+  "passed": false
+}

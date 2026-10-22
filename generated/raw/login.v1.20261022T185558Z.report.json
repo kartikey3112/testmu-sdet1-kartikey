@@ -1,0 +1,71 @@
+{
+  "module": "login",
+  "truncated": true,
+  "json_error": null,
+  "schema_errors": [
+    "<root>: 'coverage_map' is a required property",
+    "<root>: 'open_questions' is a required property",
+    "cases/5: 'steps' is a required property",
+    "cases/5: 'expected_results' is a required property",
+    "cases/5: 'automation_candidate' is a required property",
+    "cases/5: 'notes' is a required property"
+  ],
+  "case_count": 6,
+  "case_count_ok": false,
+  "coverage": {
+    "valid login": {
+      "cases": [
+        "LOGIN-001",
+        "LOGIN-002"
+      ],
+      "positive": 2,
+      "negative_boundary_security": 0
+    },
+    "invalid credentials": {
+      "cases": [
+        "LOGIN-003",
+        "LOGIN-004",
+        "LOGIN-005"
+      ],
+      "positive": 0,
+      "negative_boundary_security": 3
+    },
+    "forgot password": {
+      "cases": [
+        "LOGIN-006"
+      ],
+      "positive": 1,
+      "negative_boundary_security": 0
+    },
+    "session expiry": {
+      "cases": [],
+      "positive": 0,
+      "negative_boundary_security": 0
+    },
+    "brute-force lockout": {
+      "cases": [],
+      "positive": 0,
+      "negative_boundary_security": 0
+    }
+  },
+  "coverage_gaps": [
+    "'valid login' has no negative/boundary/security case",
+    "'invalid credentials' has no positive case",
+    "'forgot password' has no negative/boundary/security case",
+    "'session expiry' has no positive case",
+    "'session expiry' has no negative/boundary/security case",
+    "'brute-force lockout' has no positive case",
+    "'brute-force lockout' has no negative/boundary/security case"
+  ],
+  "coverage_map_issues": [],
+  "id_issues": [],
+  "duplicate_titles": [
+    "LOGIN-001 / LOGIN-002: near-duplicate (0.91)"
+  ],
+  "vague_expectations": [],
+  "hardcoded_credentials": [],
+  "typographic_characters": [],
+  "open_questions": [],
+  "automation_candidates": 5,
+  "passed": false
+}

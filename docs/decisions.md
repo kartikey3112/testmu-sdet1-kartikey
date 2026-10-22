@@ -98,3 +98,19 @@ These are choices the brief left open. They are written here so the test-generat
 
 - **Decision:** the framework collects evidence per test attempt: console errors, failed requests, page URL, screenshot and trace paths, and the last API exchange with tokens redacted. After each attempt it calls a custom hook (`framework/hookspecs.py`). The Phase 5 collector will implement that hook to write `execution-log.jsonl`.
 - **Why:** the classifier needs per-attempt data including reruns. A hook keeps the classifier out of the framework code, so it can be turned off or replaced.
+
+## D17. JSON mode, not strict `json_schema`, for test generation
+
+- **Decision:** requests use `response_format: {"type": "json_object"}`. The schema is in the prompt and enforced afterwards by `ai/testgen/validators.py`.
+- **Alternatives:** Groq's strict `json_schema` mode.
+- **Why:** strict mode requires every object to list all its properties. `test_data` is free-form on purpose. JSON mode guarantees parseable output, and our validator reports every schema violation (API v1 had 24) instead of the provider hiding them.
+
+## D18. Output budget and rate-limit handling found on the first real runs
+
+- **What happened:**
+  - Login v1's first run stopped at 3,072 completion tokens (`finish_reason: length`). 2,283 of them were gpt-oss's hidden reasoning, so the JSON was cut short.
+  - Dashboard and API v1 were then refused with HTTP 413: "tokens per minute (TPM): Limit 8000". The free tier's per-minute window was full from the previous call. Groq reports this as 413 + `rate_limit_exceeded`, not 429.
+- **Decision:**
+  - The runner sets `max_completion_tokens = 16384` and records `finish_reason`. A truncated response always fails validation.
+  - The LLM client treats 413 `rate_limit_exceeded` like 429 and backs off for up to about 62 s, honouring `Retry-After`.
+- **Why:** these are request settings, not prompt problems, so v1 was re-run unchanged (same SHA-256). The truncated first run is kept in `generated/raw/` as evidence.

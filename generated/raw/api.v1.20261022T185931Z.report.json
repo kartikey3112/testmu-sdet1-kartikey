@@ -1,0 +1,98 @@
+{
+  "module": "api",
+  "truncated": false,
+  "json_error": null,
+  "schema_errors": [
+    "cases/0/expected_results/3: '' should be non-empty",
+    "cases/1/preconditions/0: {'0': 'Obtain a valid admin token (optional)'} is not of type 'string'",
+    "cases/2/preconditions/0: {'0': 'Obtain a valid admin token'} is not of type 'string'",
+    "cases/3/preconditions/0: {'0': 'Obtain a valid admin token'} is not of type 'string'",
+    "cases/4/preconditions/0: {'0': 'Obtain admin JWT token'} is not of type 'string'",
+    "cases/5/preconditions/0: {'0': 'Obtain viewer JWT token'} is not of type 'string'",
+    "cases/6/preconditions/0: {'0': 'Obtain admin JWT token'} is not of type 'string'",
+    "cases/6/preconditions/1: {'0': 'Existing test case with title \"Login flow test\"'} is not of type 'string'",
+    "cases/7/preconditions/0: {'0': 'Obtain admin JWT token'} is not of type 'string'",
+    "cases/7/preconditions/1: {'0': 'Test case with id 1 exists'} is not of type 'string'",
+    "cases/8/preconditions/0: {'0': 'Obtain admin JWT token'} is not of type 'string'",
+    "cases/8/preconditions/1: {'0': 'Test case id 2 title \"Dashboard overview\"'} is not of type 'string'",
+    "cases/8/preconditions/2: {'0': 'Test case id 3 exists'} is not of type 'string'",
+    "cases/9/preconditions/0: {'0': 'Obtain admin JWT token'} is not of type 'string'",
+    "cases/9/preconditions/1: {'0': 'Test case with id 24 exists'} is not of type 'string'",
+    "cases/10/preconditions/0: {'0': 'Obtain admin JWT token'} is not of type 'string'",
+    "cases/11/preconditions/0: {'0': 'Obtain admin JWT token'} is not of type 'string'",
+    "cases/12/preconditions/0: {'0': 'Obtain admin JWT token'} is not of type 'string'",
+    "cases/13/preconditions/0: {'0': 'Obtain admin JWT token'} is not of type 'string'",
+    "cases/14/preconditions/0: {'0': 'Obtain admin JWT token'} is not of type 'string'",
+    "cases/15/preconditions/0: {'0': 'Obtain admin JWT token'} is not of type 'string'",
+    "cases/16/preconditions/0: {'0': 'Obtain admin JWT token'} is not of type 'string'",
+    "cases/17/preconditions/0: {'0': 'Obtain admin JWT token'} is not of type 'string'"
+  ],
+  "case_count": 18,
+  "case_count_ok": true,
+  "coverage": {
+    "auth token validation": {
+      "cases": [
+        "API-001",
+        "API-002",
+        "API-003",
+        "API-004"
+      ],
+      "positive": 1,
+      "negative_boundary_security": 3
+    },
+    "CRUD operations": {
+      "cases": [
+        "API-005",
+        "API-006",
+        "API-007",
+        "API-008",
+        "API-009",
+        "API-010"
+      ],
+      "positive": 3,
+      "negative_boundary_security": 3
+    },
+    "error handling (4xx/5xx)": {
+      "cases": [
+        "API-011",
+        "API-012",
+        "API-013"
+      ],
+      "positive": 0,
+      "negative_boundary_security": 3
+    },
+    "rate limiting": {
+      "cases": [
+        "API-014",
+        "API-015"
+      ],
+      "positive": 1,
+      "negative_boundary_security": 1
+    },
+    "schema validation": {
+      "cases": [
+        "API-016",
+        "API-017",
+        "API-018"
+      ],
+      "positive": 0,
+      "negative_boundary_security": 3
+    }
+  },
+  "coverage_gaps": [
+    "'error handling (4xx/5xx)' has no positive case",
+    "'schema validation' has no positive case"
+  ],
+  "coverage_map_issues": [],
+  "id_issues": [],
+  "duplicate_titles": [],
+  "vague_expectations": [],
+  "hardcoded_credentials": [],
+  "typographic_characters": [
+    "API-001: U+2011",
+    "API-005: U+2011"
+  ],
+  "open_questions": [],
+  "automation_candidates": 18,
+  "passed": false
+}
