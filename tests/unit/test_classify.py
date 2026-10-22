@@ -115,3 +115,37 @@ def test_missing_api_key_stops_before_writing(tmp_path, monkeypatch) -> None:
         classify.classify_run(tmp_path)
 
     assert not (tmp_path / "classification.json").exists()
+
+
+def write_log(run_dir, records: list[dict[str, Any]]) -> None:
+    lines = "\n".join(json.dumps(r) for r in records) + "\n"
+    (run_dir / "execution-log.jsonl").write_text(lines, encoding="utf-8")
+
+
+def quota_then_never(messages: list[dict[str, str]], **_: Any) -> ChatResult:
+    raise classify.LLMQuotaError("tokens per day exhausted", retry_after_s=900)
+
+
+def test_quota_exhausted_marks_unsent_tests_unclassified(tmp_path, monkeypatch) -> None:
+    from tests.unit.factories import attempt
+
+    monkeypatch.setenv("LLM_API_KEY", "fixture-key")
+    write_log(tmp_path, [attempt("t::a"), attempt("t::b")])
+
+    report = classify.classify_run(tmp_path, chat_fn=quota_then_never, budget_chars=1)
+
+    assert [c.bucket for c in report.classifications] == ["unclassified", "unclassified"]
+    assert all("quota" in c.reasoning for c in report.classifications)
+    assert len(report.llm_calls) == 1  # stopped after the first chunk, did not keep trying
+
+
+def test_quota_exhausted_raises_when_asked(tmp_path, monkeypatch) -> None:
+    from tests.unit.factories import attempt
+
+    monkeypatch.setenv("LLM_API_KEY", "fixture-key")
+    write_log(tmp_path, [attempt("t::a")])
+
+    with pytest.raises(classify.LLMQuotaError):
+        classify.classify_run(tmp_path, chat_fn=quota_then_never, raise_on_quota=True)
+
+    assert not (tmp_path / "classification.json").exists()

@@ -1,0 +1,127 @@
+{
+  "run_id": "eval-20261022T200611Z-real_bug",
+  "generated_at_utc": "2026-10-22T20:07:06Z",
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b",
+  "prompt_version": "v1",
+  "prompt_sha256": "2406cab727e34d08b0e8b260be28cae422e6eafd61abfa47afccafea1a835327",
+  "temperature": 0.0,
+  "run_summary": {
+    "total": 37,
+    "failed": 4,
+    "by_bucket": {
+      "real_bug": 4
+    }
+  },
+  "classifications": [
+    {
+      "test_id": "tests/ui/dashboard/test_dashboard.py::test_pass_rate_shows_latest_run[chromium]",
+      "case_id": "DASH-005",
+      "bucket": "real_bug",
+      "confidence": 0.92,
+      "evidence": [
+        "signals.same_error_all_attempts:true",
+        "signals.error_category_heuristic:assertion",
+        "attempts[0].error.message:assert '100.0%' == '87.5%'"
+      ],
+      "reasoning": "Rule 4 applied: same error on all attempts, assertion category, no 5xx.",
+      "suggested_next_action": "File a bug: fix the pass rate calculation expected value.",
+      "final_outcome": "failed",
+      "failed_attempts": 3,
+      "attempts": 3
+    },
+    {
+      "test_id": "tests/ui/login/test_login.py::test_fifth_consecutive_failure_locks_the_account[chromium]",
+      "case_id": "LOGIN-012",
+      "bucket": "real_bug",
+      "confidence": 0.91,
+      "evidence": [
+        "signals.same_error_all_attempts:true",
+        "signals.error_category_heuristic:assertion",
+        "attempts[0].error.message:assert 401 == 423"
+      ],
+      "reasoning": "Rule 4 applied: identical assertion failures across attempts, no 5xx.",
+      "suggested_next_action": "File a bug: correct the expected lockout status code.",
+      "final_outcome": "failed",
+      "failed_attempts": 3,
+      "attempts": 3
+    },
+    {
+      "test_id": "tests/ui/login/test_login.py::test_correct_password_is_refused_while_locked[chromium]",
+      "case_id": "LOGIN-013",
+      "bucket": "real_bug",
+      "confidence": 0.91,
+      "evidence": [
+        "signals.same_error_all_attempts:true",
+        "signals.error_category_heuristic:assertion",
+        "attempts[0].error.message:assert 303 == 423"
+      ],
+      "reasoning": "Rule 4 applied: identical assertion failures across attempts, no 5xx.",
+      "suggested_next_action": "File a bug: adjust the expected response code for locked account login.",
+      "final_outcome": "failed",
+      "failed_attempts": 3,
+      "attempts": 3
+    },
+    {
+      "test_id": "tests/api/test_api.py::test_admin_deletes_a_test_case",
+      "case_id": "API-009",
+      "bucket": "real_bug",
+      "confidence": 0.93,
+      "evidence": [
+        "signals.same_error_all_attempts: true",
+        "signals.error_category_heuristic: assertion",
+        "attempts[0].error.message: Expected 404, got 200",
+        "attempts[0].api_last_exchange.status: 200"
+      ],
+      "reasoning": "Rule 4 matched: same error on all attempts, category is assertion, no 5xx seen, leading to real_bug.",
+      "suggested_next_action": "File a bug: API returns 200 instead of expected 404 when deleting a test case; update the endpoint or adjust the test expectation.",
+      "final_outcome": "failed",
+      "failed_attempts": 3,
+      "attempts": 3
+    }
+  ],
+  "llm_calls": [
+    {
+      "chunk": 1,
+      "tests": 3,
+      "attempts": 1,
+      "valid": true,
+      "latency_s": 2.23,
+      "finish_reason": "stop",
+      "usage": {
+        "queue_time": 0.21278964,
+        "prompt_tokens": 3862,
+        "prompt_time": 0.199233081,
+        "completion_tokens": 731,
+        "completion_time": 1.520241527,
+        "total_tokens": 4593,
+        "total_time": 1.719474608,
+        "completion_tokens_details": {
+          "reasoning_tokens": 356
+        }
+      },
+      "errors": []
+    },
+    {
+      "chunk": 2,
+      "tests": 1,
+      "attempts": 1,
+      "valid": true,
+      "latency_s": 1.73,
+      "finish_reason": "stop",
+      "usage": {
+        "queue_time": 0.400170541,
+        "prompt_tokens": 2535,
+        "prompt_time": 0.136011658,
+        "completion_tokens": 487,
+        "completion_time": 1.014930884,
+        "total_tokens": 3022,
+        "total_time": 1.1509425420000001,
+        "completion_tokens_details": {
+          "reasoning_tokens": 320
+        }
+      },
+      "errors": []
+    }
+  ]
+}

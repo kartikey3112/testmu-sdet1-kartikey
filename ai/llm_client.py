@@ -21,6 +21,9 @@ load_dotenv()
 MAX_RETRIES = 6  # 2+4+8+16+32+60 s of backoff: the free-tier TPM window can need over a minute
 BACKOFF_BASE_S = 2.0
 MAX_BACKOFF_S = 60.0
+# If the provider asks us to wait longer than this, waiting in-process is pointless: on Groq
+# it means the daily token limit (TPD) is used up. Fail at once with the provider's message.
+GIVE_UP_AFTER_S = 120.0
 
 
 class LLMConfigError(RuntimeError):
@@ -29,6 +32,22 @@ class LLMConfigError(RuntimeError):
 
 class LLMError(RuntimeError):
     pass
+
+
+class LLMQuotaError(LLMError):
+    """The provider's quota needs a long wait (e.g. Groq's tokens-per-day limit)."""
+
+    def __init__(self, message: str, retry_after_s: float) -> None:
+        super().__init__(message)
+        self.retry_after_s = retry_after_s
+
+
+def requested_wait(response: httpx.Response) -> float | None:
+    value = response.headers.get("retry-after")
+    try:
+        return float(value) if value else None
+    except ValueError:
+        return None
 
 
 @dataclass(frozen=True)
@@ -132,6 +151,11 @@ def chat(messages: list[dict[str, str]], *, config: LLMConfig | None = None,
                         finish_reason=body["choices"][0].get("finish_reason"),
                     )
                 retryable = _is_retryable(response)
+                wait = requested_wait(response)
+                if retryable and wait is not None and wait > GIVE_UP_AFTER_S:
+                    raise LLMQuotaError(
+                        f"LLM quota exhausted (HTTP {response.status_code}); provider asks to"
+                        f" retry in {wait:.0f}s: {response.text[:400]}", wait)
                 if not retryable or attempt > MAX_RETRIES:
                     raise LLMError(
                         f"LLM request failed: HTTP {response.status_code}: {response.text[:500]}"

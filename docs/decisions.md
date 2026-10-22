@@ -147,3 +147,16 @@ These are choices the brief left open. They are written here so the test-generat
 
 - **Decision:** classification runs in our `pytest_sessionfinish`, before pytest-html's own (which is `trylast`) writes the file. The run summary goes into pytest-html's summary list. The "LLM bucket" column and per-test blocks are added to the row data pytest-html holds until then.
 - **Trade-off:** that row data is internal to pytest-html, so `pytest-html==4.2.0` is pinned and the code says why. `make classify RUN=<id>` also writes standalone `classification.json` and `classification.md`.
+
+## D23. Free-tier daily token limit: fail fast, never score what wasn't classified
+
+- **What happened (2026-10-22/23):** the evaluation hit Groq's tokens-per-day limit (200,000) during the flaky scenario.
+  - Measured usage that day: about 110k tokens for test generation and about 110k for classification. The environment scenario alone used 90,631: the database fault fails all 37 tests, which meant 12 requests.
+  - Groq answered 429 with `Retry-After` of about 900 s. The client capped waits at 60 s, so it kept retrying a request that could not succeed.
+  - One flaky-scenario chunk was refused, and its test was labelled "unclassified" with a misleading reason.
+- **Decision:**
+  - When the provider asks for a wait longer than 120 s, the client raises `LLMQuotaError` at once.
+  - `classify_run` stops sending chunks and marks the unsent tests `unclassified` with the quota as the reason.
+  - The evaluation raises instead, so it never writes a score for an unclassified run. `--reuse <stamp>` resumes from the saved runs.
+  - The flaky run's quota-failed classification is kept next to the new one (`classification.quota-failed.json`).
+- **Observed refill:** Groq's own wait times imply the daily budget refills at about 139 tokens per minute (200,000 / 1,440).

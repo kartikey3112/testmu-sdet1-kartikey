@@ -2,6 +2,7 @@
 
   python -m scripts.eval_classifier                    # all scenarios
   python -m scripts.eval_classifier --scenarios mixed  # some of them
+  python -m scripts.eval_classifier --reuse <stamp>    # resume after a quota stop
 
 Each scenario runs the UI and API suites with --reruns 2 and a set of injected faults
 (app/faults.py), then classifies the failures with the real LLM. Ground truth:
@@ -30,7 +31,7 @@ from typing import Any
 
 from ai.classifier.classify import ClassificationReport, classify_run, load_records
 from ai.classifier.payload import failing_tests
-from ai.llm_client import LLMConfigError, load_llm_config
+from ai.llm_client import LLMConfigError, LLMQuotaError, load_llm_config
 from app.faults import FAULT_BUCKETS, Bucket
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -157,6 +158,8 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--scenarios", nargs="+", choices=list(SCENARIOS),
                         default=list(SCENARIOS))
+    parser.add_argument("--reuse", metavar="STAMP",
+                        help="resume an evaluation: reuse its test runs and classifications")
     args = parser.parse_args()
     try:
         config = load_llm_config()
@@ -164,17 +167,26 @@ def main() -> int:
         print(f"error: {exc}", file=sys.stderr)
         return 2
 
-    stamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
+    stamp = args.reuse or datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
     out = OUT / stamp
     runs: dict[str, Path] = {}
+    if args.reuse:  # earlier runs of this evaluation, also needed for mixed ground truth
+        for name in SCENARIOS:
+            run_dir = REPORTS / f"run-eval-{stamp}-{name}"
+            if (run_dir / "execution-log.jsonl").exists():
+                runs[name] = run_dir
     summary: dict[str, Any] = {"generated_at_utc": stamp, "model": config.model,
                                "prompt_version": None, "scenarios": {}}
     all_results: list[dict[str, Any]] = []
 
     for name in args.scenarios:
         spec = SCENARIOS[name]
-        run_dir = run_suite(name, spec["faults"], stamp)
-        runs[name] = run_dir
+        if name in runs:
+            run_dir = runs[name]
+            print(f"[{name}] reusing {run_dir.name}", flush=True)
+        else:
+            run_dir = run_suite(name, spec["faults"], stamp)
+            runs[name] = run_dir
         failing = failing_ids(run_dir)
         entry: dict[str, Any] = {"faults": spec["faults"], "run_id": run_dir.name,
                                  "failing": len(failing), "notes": []}
@@ -186,7 +198,19 @@ def main() -> int:
             entry["notes"].append("ENV_HEALTH_FAILING alone failed tests; mixed-scenario"
                                   " failures outside the bug set are therefore not scored.")
         if spec["classify"] and failing:
-            report: ClassificationReport = classify_run(run_dir)
+            existing = run_dir / "classification.json"
+            if args.reuse and existing.exists():
+                report = ClassificationReport.model_validate_json(
+                    existing.read_text(encoding="utf-8"))
+                print(f"[{name}] reusing its classification", flush=True)
+            else:
+                try:
+                    report = classify_run(run_dir, raise_on_quota=True)
+                except LLMQuotaError as exc:
+                    print(f"[{name}] stopped: {exc}", file=sys.stderr)
+                    print(f"Resume later with: python -m scripts.eval_classifier --reuse {stamp}",
+                          file=sys.stderr)
+                    return 3
             summary["prompt_version"] = report.prompt_version
             truth = ground_truth(name, failing, runs)
             results = [{

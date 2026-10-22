@@ -1,0 +1,944 @@
+{
+  "run_id": "eval-20261022T200611Z-environment_issue",
+  "generated_at_utc": "2026-10-22T20:18:09Z",
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b",
+  "prompt_version": "v1",
+  "prompt_sha256": "2406cab727e34d08b0e8b260be28cae422e6eafd61abfa47afccafea1a835327",
+  "temperature": 0.0,
+  "run_summary": {
+    "total": 37,
+    "failed": 37,
+    "by_bucket": {
+      "environment_issue": 37
+    }
+  },
+  "classifications": [
+    {
+      "test_id": "tests/ui/dashboard/test_dashboard.py::test_total_test_cases_widget_loads[chromium]",
+      "case_id": "DASH-001",
+      "bucket": "environment_issue",
+      "confidence": 0.78,
+      "evidence": [
+        "signals.health_ok_at_failure:false",
+        "attempts[0].error.message:\"Could not log in as admin: HTTP 500\"",
+        "attempts[0].health_at_failure.status:503"
+      ],
+      "reasoning": "Rule 2 does not directly apply, but tie‑break rule leans to environment_issue because the majority of failing tests are 5xx and health checks are failing.",
+      "suggested_next_action": "Check the backend/database service and /health endpoint, resolve the 503 responses, then re‑run the dashboard tests.",
+      "final_outcome": "error",
+      "failed_attempts": 3,
+      "attempts": 3
+    },
+    {
+      "test_id": "tests/ui/dashboard/test_dashboard.py::test_date_from_after_date_to_puts_recent_runs_in_error[chromium]",
+      "case_id": "DASH-002",
+      "bucket": "environment_issue",
+      "confidence": 0.78,
+      "evidence": [
+        "signals.health_ok_at_failure:false",
+        "attempts[0].error.message:\"Could not log in as admin: HTTP 500\"",
+        "attempts[0].health_at_failure.status:503"
+      ],
+      "reasoning": "Rule 2 not triggered, but majority 5xx failures and unhealthy health check push classification to environment_issue per tie‑break.",
+      "suggested_next_action": "Investigate the API/database health (503), fix the underlying service, and re‑run the test.",
+      "final_outcome": "error",
+      "failed_attempts": 3,
+      "attempts": 3
+    },
+    {
+      "test_id": "tests/ui/dashboard/test_dashboard.py::test_total_test_cases_shows_seed_count[chromium]",
+      "case_id": "DASH-004",
+      "bucket": "environment_issue",
+      "confidence": 0.78,
+      "evidence": [
+        "signals.health_ok_at_failure:false",
+        "attempts[0].error.message:\"Could not log in as admin: HTTP 500\"",
+        "attempts[0].health_at_failure.status:503"
+      ],
+      "reasoning": "Same pattern as other dashboard tests; tie‑break towards environment_issue given the run‑wide 5xx pattern.",
+      "suggested_next_action": "Verify the login service/database health, address the 503 errors, then re‑execute the test suite.",
+      "final_outcome": "error",
+      "failed_attempts": 3,
+      "attempts": 3
+    },
+    {
+      "test_id": "tests/ui/dashboard/test_dashboard.py::test_pass_rate_shows_latest_run[chromium]",
+      "case_id": "DASH-005",
+      "bucket": "environment_issue",
+      "confidence": 0.78,
+      "evidence": [
+        "signals.health_ok_at_failure:false",
+        "attempts[0].error.message:\"Could not log in as admin: HTTP 500\"",
+        "attempts[0].health_at_failure.status:503"
+      ],
+      "reasoning": "Consistent 5xx login failures with unhealthy health checks; tie‑break rule selects environment_issue.",
+      "suggested_next_action": "Check backend health (especially database), resolve the 503 response, and re‑run the dashboard tests.",
+      "final_outcome": "error",
+      "failed_attempts": 3,
+      "attempts": 3
+    },
+    {
+      "test_id": "tests/ui/dashboard/test_dashboard.py::test_recent_runs_default_is_latest_ten_newest_first[chromium]",
+      "case_id": "DASH-007",
+      "bucket": "environment_issue",
+      "confidence": 0.78,
+      "evidence": [
+        "signals.health_ok_at_failure:false",
+        "attempts[0].error.message:\"Could not log in as admin: HTTP 500\"",
+        "attempts[0].health_at_failure.status:503",
+        "signals.error_category_heuristic:\"5xx\""
+      ],
+      "reasoning": "Rule 2 does not match directly, but tie‑break rule leans to environment_issue because many overview tests are 5xx and health checks fail.",
+      "suggested_next_action": "Check the backend/database service health (503 response) and resolve the HTTP 500 login error, then re‑run the suite.",
+      "final_outcome": "error",
+      "failed_attempts": 3,
+      "attempts": 3
+    },
+    {
+      "test_id": "tests/ui/dashboard/test_dashboard.py::test_same_day_date_range_returns_that_run[chromium]",
+      "case_id": "DASH-009",
+      "bucket": "environment_issue",
+      "confidence": 0.78,
+      "evidence": [
+        "signals.health_ok_at_failure:false",
+        "attempts[0].error.message:\"Could not log in as admin: HTTP 500\"",
+        "attempts[0].health_at_failure.status:503",
+        "signals.error_category_heuristic:\"5xx\""
+      ],
+      "reasoning": "Rule 2 does not match directly, but tie‑break rule leans to environment_issue because many overview tests are 5xx and health checks fail.",
+      "suggested_next_action": "Investigate the failing health endpoint (503) and the underlying 500 error during login, fix the service, then re‑run.",
+      "final_outcome": "error",
+      "failed_attempts": 3,
+      "attempts": 3
+    },
+    {
+      "test_id": "tests/ui/dashboard/test_dashboard.py::test_wide_viewport_shows_sidebar_and_two_columns[chromium]",
+      "case_id": "DASH-011",
+      "bucket": "environment_issue",
+      "confidence": 0.78,
+      "evidence": [
+        "signals.health_ok_at_failure:false",
+        "attempts[0].error.message:\"Could not log in as admin: HTTP 500\"",
+        "attempts[0].health_at_failure.status:503",
+        "signals.error_category_heuristic:\"5xx\""
+      ],
+      "reasoning": "Rule 2 does not match directly, but tie‑break rule leans to environment_issue because many overview tests are 5xx and health checks fail.",
+      "suggested_next_action": "Check the application’s login service and database health (503), resolve the 500 error, then re‑run the test.",
+      "final_outcome": "failed",
+      "failed_attempts": 3,
+      "attempts": 3
+    },
+    {
+      "test_id": "tests/ui/dashboard/test_dashboard.py::test_narrow_viewport_hides_sidebar_behind_menu[chromium]",
+      "case_id": "DASH-013",
+      "bucket": "environment_issue",
+      "confidence": 0.78,
+      "evidence": [
+        "signals.health_ok_at_failure:false",
+        "attempts[0].error.message:\"Could not log in as admin: HTTP 500\"",
+        "attempts[0].health_at_failure.status:503",
+        "signals.error_category_heuristic:\"5xx\""
+      ],
+      "reasoning": "Rule 2 does not match directly, but tie‑break rule leans to environment_issue because many overview tests are 5xx and health checks fail.",
+      "suggested_next_action": "Inspect and fix the backend/database causing the 503 health check and 500 login failure, then re‑run the suite.",
+      "final_outcome": "failed",
+      "failed_attempts": 3,
+      "attempts": 3
+    },
+    {
+      "test_id": "tests/ui/dashboard/test_dashboard.py::test_admin_sees_all_five_widgets[chromium]",
+      "case_id": "DASH-014",
+      "bucket": "environment_issue",
+      "confidence": 0.78,
+      "evidence": [
+        "signals.passed_on_rerun: false",
+        "signals.http_5xx_seen: false",
+        "attempts[0].error.message: Could not log in as admin: HTTP 500",
+        "attempts[0].health_at_failure.status: 503"
+      ],
+      "reasoning": "No rule matched directly; many tests in the overview have 5xx category, so tie‑break leans to environment_issue (rule 2 tie‑break).",
+      "suggested_next_action": "Check the database health endpoint and underlying DB service, then re‑run the suite.",
+      "final_outcome": "error",
+      "failed_attempts": 3,
+      "attempts": 3
+    },
+    {
+      "test_id": "tests/ui/dashboard/test_dashboard.py::test_viewer_sees_only_three_widgets[chromium]",
+      "case_id": "DASH-015",
+      "bucket": "environment_issue",
+      "confidence": 0.78,
+      "evidence": [
+        "signals.passed_on_rerun: false",
+        "signals.http_5xx_seen: false",
+        "attempts[0].error.message: Could not log in as viewer: HTTP 500",
+        "attempts[0].health_at_failure.status: 503"
+      ],
+      "reasoning": "No rule matched directly; many tests in the overview have 5xx category, so tie‑break leans to environment_issue (rule 2 tie‑break).",
+      "suggested_next_action": "Check the database health endpoint and underlying DB service, then re‑run the suite.",
+      "final_outcome": "error",
+      "failed_attempts": 3,
+      "attempts": 3
+    },
+    {
+      "test_id": "tests/ui/dashboard/test_dashboard.py::test_viewer_gets_403_from_flaky_tests_endpoint[chromium]",
+      "case_id": "DASH-016",
+      "bucket": "environment_issue",
+      "confidence": 0.78,
+      "evidence": [
+        "signals.passed_on_rerun: false",
+        "signals.http_5xx_seen: false",
+        "attempts[0].error.message: Could not log in as viewer: HTTP 500",
+        "attempts[0].health_at_failure.status: 503"
+      ],
+      "reasoning": "No rule matched directly; many tests in the overview have 5xx category, so tie‑break leans to environment_issue (rule 2 tie‑break).",
+      "suggested_next_action": "Check the database health endpoint and underlying DB service, then re‑run the suite.",
+      "final_outcome": "error",
+      "failed_attempts": 3,
+      "attempts": 3
+    },
+    {
+      "test_id": "tests/ui/dashboard/test_smoke_dashboard.py::test_total_test_cases_widget_matches_api_and_seed[chromium]",
+      "case_id": null,
+      "bucket": "environment_issue",
+      "confidence": 0.78,
+      "evidence": [
+        "signals.passed_on_rerun: false",
+        "signals.http_5xx_seen: false",
+        "attempts[0].error.message: Could not log in as admin: HTTP 500",
+        "attempts[0].health_at_failure.status: 503"
+      ],
+      "reasoning": "No rule matched directly; many tests in the overview have 5xx category, so tie‑break leans to environment_issue (rule 2 tie‑break).",
+      "suggested_next_action": "Check the database health endpoint and underlying DB service, then re‑run the suite.",
+      "final_outcome": "error",
+      "failed_attempts": 3,
+      "attempts": 3
+    },
+    {
+      "test_id": "tests/ui/login/test_login.py::test_admin_signs_in_with_correct_credentials[chromium]",
+      "case_id": "LOGIN-001",
+      "bucket": "environment_issue",
+      "confidence": 0.92,
+      "evidence": [
+        "signals.http_5xx_seen:true",
+        "attempts[0].ui.failed_requests:\"POST /login -> 500\"",
+        "attempts[0].health_at_failure.status:503"
+      ],
+      "reasoning": "Rule 2 applied because a 5xx response was seen in the attempts.",
+      "suggested_next_action": "Check the login backend/database service for the 500 errors and resolve the 5xx condition before re‑running.",
+      "final_outcome": "failed",
+      "failed_attempts": 3,
+      "attempts": 3
+    },
+    {
+      "test_id": "tests/ui/login/test_login.py::test_correct_password_still_works_after_a_failed_attempt[chromium]",
+      "case_id": "LOGIN-004",
+      "bucket": "environment_issue",
+      "confidence": 0.91,
+      "evidence": [
+        "signals.http_5xx_seen:true",
+        "attempts[0].ui.console_errors:\"Failed to load resource: the server responded with a status of 500 (Internal Server Error)\"",
+        "attempts[0].health_at_failure.status:503"
+      ],
+      "reasoning": "Rule 2 applied because a 5xx response was observed despite the error category being assertion.",
+      "suggested_next_action": "Investigate the server error causing the 500 responses during login and fix the underlying service issue.",
+      "final_outcome": "failed",
+      "failed_attempts": 3,
+      "attempts": 3
+    },
+    {
+      "test_id": "tests/ui/login/test_login.py::test_unknown_email_gets_generic_error[chromium]",
+      "case_id": "LOGIN-005",
+      "bucket": "environment_issue",
+      "confidence": 0.93,
+      "evidence": [
+        "signals.http_5xx_seen:true",
+        "attempts[0].ui.failed_requests:\"POST /login -> 500\"",
+        "attempts[0].health_at_failure.status:503"
+      ],
+      "reasoning": "Rule 2 applied as the test consistently saw a 5xx response, indicating an environment problem.",
+      "suggested_next_action": "Examine the authentication endpoint and database health (503 health check) to address the 500 errors causing the failure.",
+      "final_outcome": "failed",
+      "failed_attempts": 3,
+      "attempts": 3
+    },
+    {
+      "test_id": "tests/ui/login/test_login.py::test_reset_link_sets_a_new_password[chromium]",
+      "case_id": "LOGIN-006",
+      "bucket": "environment_issue",
+      "confidence": 0.92,
+      "evidence": [
+        "signals.http_5xx_seen:true",
+        "attempts[0].error.type:\"HTTPStatusError\"",
+        "attempts[0].health_at_failure.status:503"
+      ],
+      "reasoning": "Rule 2 applied because a 5xx error was seen in all attempts.",
+      "suggested_next_action": "Check the backend service/database that returned 500/503 errors, then re‑run the test.",
+      "final_outcome": "failed",
+      "failed_attempts": 3,
+      "attempts": 3
+    },
+    {
+      "test_id": "tests/ui/login/test_login.py::test_reset_link_is_expired_at_exactly_30_minutes[chromium]",
+      "case_id": "LOGIN-007",
+      "bucket": "environment_issue",
+      "confidence": 0.92,
+      "evidence": [
+        "signals.http_5xx_seen:true",
+        "attempts[0].error.type:\"HTTPStatusError\"",
+        "attempts[0].health_at_failure.status:503"
+      ],
+      "reasoning": "Rule 2 applied because a 5xx error was seen in all attempts.",
+      "suggested_next_action": "Investigate the server returning 500/503 for the outbox endpoint and fix the underlying issue before re‑running.",
+      "final_outcome": "failed",
+      "failed_attempts": 3,
+      "attempts": 3
+    },
+    {
+      "test_id": "tests/ui/login/test_login.py::test_forgot_password_does_not_reveal_unknown_email[chromium]",
+      "case_id": "LOGIN-008",
+      "bucket": "environment_issue",
+      "confidence": 0.9,
+      "evidence": [
+        "signals.http_5xx_seen:true",
+        "attempts[0].error.type:\"AssertionError\"",
+        "attempts[0].health_at_failure.status:503"
+      ],
+      "reasoning": "Rule 2 applied because a 5xx error was observed despite the assertion failure.",
+      "suggested_next_action": "Resolve the 5xx backend error causing the missing UI element, then re‑run the test.",
+      "final_outcome": "failed",
+      "failed_attempts": 3,
+      "attempts": 3
+    },
+    {
+      "test_id": "tests/ui/login/test_login.py::test_active_session_gives_access_to_dashboard[chromium]",
+      "case_id": "LOGIN-009",
+      "bucket": "environment_issue",
+      "confidence": 0.92,
+      "evidence": [
+        "signals.http_5xx_seen: true",
+        "attempts[0].ui.failed_requests: [\"POST /login -> 500\",\"GET /dashboard -> 500\"]",
+        "attempts[0].health_at_failure.status: 503"
+      ],
+      "reasoning": "Rule 2 applied because a 5xx response was seen in the failed attempts.",
+      "suggested_next_action": "Check backend services (e.g., database) for the 500 errors and re‑run the test.",
+      "final_outcome": "failed",
+      "failed_attempts": 3,
+      "attempts": 3
+    },
+    {
+      "test_id": "tests/ui/login/test_login.py::test_session_is_expired_at_exactly_1800_seconds[chromium]",
+      "case_id": "LOGIN-010",
+      "bucket": "environment_issue",
+      "confidence": 0.92,
+      "evidence": [
+        "signals.http_5xx_seen: true",
+        "attempts[0].ui.failed_requests: [\"POST /login -> 500\"]",
+        "attempts[0].health_at_failure.status: 503"
+      ],
+      "reasoning": "Rule 2 applied because a 5xx response was seen in the failed attempts.",
+      "suggested_next_action": "Investigate the server/database causing the 500 error and then re‑run the test.",
+      "final_outcome": "failed",
+      "failed_attempts": 3,
+      "attempts": 3
+    },
+    {
+      "test_id": "tests/ui/login/test_login.py::test_fifth_consecutive_failure_locks_the_account[chromium]",
+      "case_id": "LOGIN-012",
+      "bucket": "environment_issue",
+      "confidence": 0.92,
+      "evidence": [
+        "signals.http_5xx_seen: true",
+        "attempts[0].ui.failed_requests: [\"POST /login -> 500 (x5)\"]",
+        "attempts[0].health_at_failure.status: 503"
+      ],
+      "reasoning": "Rule 2 applied because a 5xx response was seen in the failed attempts.",
+      "suggested_next_action": "Check the authentication service/database for the 500 errors and re‑run the test.",
+      "final_outcome": "failed",
+      "failed_attempts": 3,
+      "attempts": 3
+    },
+    {
+      "test_id": "tests/ui/login/test_login.py::test_correct_password_is_refused_while_locked[chromium]",
+      "case_id": "LOGIN-013",
+      "bucket": "environment_issue",
+      "confidence": 0.92,
+      "evidence": [
+        "signals.http_5xx_seen: true",
+        "attempts[0].ui.failed_requests: [\"POST /login -> 500 (x6)\"]",
+        "attempts[0].health_at_failure.status: 503"
+      ],
+      "reasoning": "Rule 2 applied because a 5xx response was seen in the failed attempts.",
+      "suggested_next_action": "Investigate backend services (e.g., database, auth API) and health endpoint, then re‑run the test.",
+      "final_outcome": "failed",
+      "failed_attempts": 3,
+      "attempts": 3
+    },
+    {
+      "test_id": "tests/ui/login/test_login.py::test_lock_has_run_out_at_exactly_15_minutes[chromium]",
+      "case_id": "LOGIN-014",
+      "bucket": "environment_issue",
+      "confidence": 0.92,
+      "evidence": [
+        "signals.http_5xx_seen: true",
+        "attempts[0].ui.failed_requests: [\"POST /login -> 500 (x6)\"]",
+        "attempts[0].health_at_failure.status: 503"
+      ],
+      "reasoning": "Rule 2 applied because a 5xx response was seen in the failed attempts.",
+      "suggested_next_action": "Check the login service and its dependencies for 5xx errors and health status, then re‑run the test.",
+      "final_outcome": "failed",
+      "failed_attempts": 3,
+      "attempts": 3
+    },
+    {
+      "test_id": "tests/ui/login/test_smoke_login.py::test_admin_can_sign_in_and_reach_dashboard[chromium]",
+      "case_id": null,
+      "bucket": "environment_issue",
+      "confidence": 0.92,
+      "evidence": [
+        "signals.http_5xx_seen: true",
+        "attempts[0].ui.failed_requests: [\"POST /login -> 500\"]",
+        "attempts[0].health_at_failure.status: 503"
+      ],
+      "reasoning": "Rule 2 applied because a 5xx response was seen in the failed attempts.",
+      "suggested_next_action": "Resolve the internal server error causing the 5xx response and ensure health checks pass, then re‑run the test.",
+      "final_outcome": "failed",
+      "failed_attempts": 3,
+      "attempts": 3
+    },
+    {
+      "test_id": "tests/api/test_api.py::test_valid_admin_token_lists_test_cases",
+      "case_id": "API-001",
+      "bucket": "environment_issue",
+      "confidence": 0.92,
+      "evidence": [
+        "signals.http_5xx_seen:true",
+        "attempts[0].api_last_exchange.status:500",
+        "attempts[0].error.type:KeyError"
+      ],
+      "reasoning": "Rule 2 applied because a 5xx response was seen in every attempt.",
+      "suggested_next_action": "Check the authentication service and database health, then re‑run the test.",
+      "final_outcome": "failed",
+      "failed_attempts": 3,
+      "attempts": 3
+    },
+    {
+      "test_id": "tests/api/test_api.py::test_tampered_token_is_rejected",
+      "case_id": "API-004",
+      "bucket": "environment_issue",
+      "confidence": 0.92,
+      "evidence": [
+        "signals.http_5xx_seen:true",
+        "attempts[0].api_last_exchange.status:500",
+        "attempts[0].error.type:AssertionError"
+      ],
+      "reasoning": "Rule 2 applied because a 5xx response was seen in every attempt.",
+      "suggested_next_action": "Investigate the 5xx errors from the token endpoint and underlying services, then re‑run.",
+      "final_outcome": "error",
+      "failed_attempts": 3,
+      "attempts": 3
+    },
+    {
+      "test_id": "tests/api/test_api.py::test_admin_creates_a_test_case",
+      "case_id": "API-005",
+      "bucket": "environment_issue",
+      "confidence": 0.92,
+      "evidence": [
+        "signals.http_5xx_seen:true",
+        "attempts[0].api_last_exchange.status:500",
+        "attempts[0].error.type:AssertionError"
+      ],
+      "reasoning": "Rule 2 applied because a 5xx response was seen in every attempt.",
+      "suggested_next_action": "Fix the server-side error (likely database or auth service) and re‑execute the test.",
+      "final_outcome": "error",
+      "failed_attempts": 3,
+      "attempts": 3
+    },
+    {
+      "test_id": "tests/api/test_api.py::test_admin_deletes_a_test_case",
+      "case_id": "API-009",
+      "bucket": "environment_issue",
+      "confidence": 0.93,
+      "evidence": [
+        "signals.http_5xx_seen:true",
+        "attempts[0].api_last_exchange.status:500",
+        "attempts[0].error.message:\"Token request failed: 500\"",
+        "attempts[0].health_at_failure.status:503"
+      ],
+      "reasoning": "Rule 2 matched because a 5xx response was seen in every attempt, indicating an environment problem. No passed rerun and health checks failed, reinforcing the environment issue.",
+      "suggested_next_action": "Check the API backend and database health, resolve the 5xx errors, then re‑run the test.",
+      "final_outcome": "error",
+      "failed_attempts": 3,
+      "attempts": 3
+    },
+    {
+      "test_id": "tests/api/test_api.py::test_viewer_cannot_create_a_test_case",
+      "case_id": "API-010",
+      "bucket": "environment_issue",
+      "confidence": 0.93,
+      "evidence": [
+        "signals.http_5xx_seen:true",
+        "attempts[0].api_last_exchange.status:500",
+        "attempts[0].error.message:\"Token request failed: 500\"",
+        "attempts[0].health_at_failure.status:503"
+      ],
+      "reasoning": "Rule 2 matched because a 5xx response was seen in every attempt, indicating an environment problem. No passed rerun and health checks failed, reinforcing the environment issue.",
+      "suggested_next_action": "Investigate the authentication service and database health, fix the 5xx errors, then re‑run the test.",
+      "final_outcome": "error",
+      "failed_attempts": 3,
+      "attempts": 3
+    },
+    {
+      "test_id": "tests/api/test_api.py::test_unknown_id_returns_404",
+      "case_id": "API-014",
+      "bucket": "environment_issue",
+      "confidence": 0.93,
+      "evidence": [
+        "signals.http_5xx_seen:true",
+        "attempts[0].api_last_exchange.status:500",
+        "attempts[0].error.message:\"Token request failed: 500\"",
+        "attempts[0].health_at_failure.status:503"
+      ],
+      "reasoning": "Rule 2 matched because a 5xx response was seen in every attempt, indicating an environment problem. No passed rerun and health checks failed, reinforcing the environment issue.",
+      "suggested_next_action": "Verify the auth token endpoint and underlying services for failures, resolve the 5xx responses, then re‑run the test.",
+      "final_outcome": "error",
+      "failed_attempts": 3,
+      "attempts": 3
+    },
+    {
+      "test_id": "tests/api/test_api.py::test_database_fault_returns_500",
+      "case_id": "API-017",
+      "bucket": "environment_issue",
+      "confidence": 0.93,
+      "evidence": [
+        "signals.http_5xx_seen: true",
+        "attempts[0].api_last_exchange.status: 500",
+        "attempts[0].error.message: Token request failed: 500"
+      ],
+      "reasoning": "Rule 2 matched because a 5xx response was seen in every attempt. The same 5xx error persisted across attempts, indicating an external service problem.",
+      "suggested_next_action": "Check the database/API backend for internal errors (503 health check, 500 token request) and retry after fixing the service.",
+      "final_outcome": "error",
+      "failed_attempts": 3,
+      "attempts": 3
+    },
+    {
+      "test_id": "tests/api/test_api.py::test_list_works_again_after_fault_is_cleared",
+      "case_id": "API-018",
+      "bucket": "environment_issue",
+      "confidence": 0.93,
+      "evidence": [
+        "signals.http_5xx_seen: true",
+        "attempts[0].api_last_exchange.status: 500",
+        "attempts[0].error.message: Token request failed: 500"
+      ],
+      "reasoning": "Rule 2 matched because a 5xx response was observed in all attempts. Consistent 5xx errors point to an environment problem rather than code defects.",
+      "suggested_next_action": "Investigate the API token endpoint and database health (503) and resolve the internal server error before re‑running the test.",
+      "final_outcome": "error",
+      "failed_attempts": 3,
+      "attempts": 3
+    },
+    {
+      "test_id": "tests/api/test_api.py::test_sixty_requests_in_a_minute_succeed",
+      "case_id": "API-019",
+      "bucket": "environment_issue",
+      "confidence": 0.93,
+      "evidence": [
+        "signals.http_5xx_seen: true",
+        "attempts[0].api_last_exchange.status: 500",
+        "attempts[0].error.message: Token request failed: 500"
+      ],
+      "reasoning": "Rule 2 applied as each attempt returned a 5xx error. The uniform failure across attempts indicates an external service issue.",
+      "suggested_next_action": "Fix the underlying API/database fault causing 500 responses and then re‑execute the test suite.",
+      "final_outcome": "error",
+      "failed_attempts": 3,
+      "attempts": 3
+    },
+    {
+      "test_id": "tests/api/test_api.py::test_sixty_first_request_is_rate_limited",
+      "case_id": "API-020",
+      "bucket": "environment_issue",
+      "confidence": 0.92,
+      "evidence": [
+        "signals.http_5xx_seen: true",
+        "attempts[0].api_last_exchange.status: 500",
+        "attempts[0].error.message: Token request failed: 500"
+      ],
+      "reasoning": "Rule 2 applies because a 5xx response was seen in every attempt. The same 5xx error repeats across attempts, indicating an external service problem.",
+      "suggested_next_action": "Investigate the token endpoint and backend services (e.g., database) that returned 500, fix the underlying issue, then re‑run the test.",
+      "final_outcome": "error",
+      "failed_attempts": 3,
+      "attempts": 3
+    },
+    {
+      "test_id": "tests/api/test_api.py::test_token_response_matches_schema",
+      "case_id": "API-021",
+      "bucket": "environment_issue",
+      "confidence": 0.91,
+      "evidence": [
+        "signals.http_5xx_seen: true",
+        "attempts[0].api_last_exchange.status: 500",
+        "attempts[0].error.message: assert 500 == 200"
+      ],
+      "reasoning": "Rule 2 applies because a 5xx response was observed in all attempts. Consistent 5xx errors point to an environment problem rather than a code bug.",
+      "suggested_next_action": "Check the authentication service for the 500 Internal Server Error (e.g., database health), resolve it, and re‑execute the test.",
+      "final_outcome": "failed",
+      "failed_attempts": 3,
+      "attempts": 3
+    },
+    {
+      "test_id": "tests/api/test_api.py::test_created_test_case_matches_schema",
+      "case_id": "API-022",
+      "bucket": "environment_issue",
+      "confidence": 0.92,
+      "evidence": [
+        "signals.http_5xx_seen: true",
+        "attempts[0].api_last_exchange.status: 500",
+        "attempts[0].error.message: Token request failed: 500"
+      ],
+      "reasoning": "Rule 2 applies since every attempt resulted in a 5xx error. The repeated 5xx indicates an external dependency failure, classifying it as an environment issue.",
+      "suggested_next_action": "Diagnose the token acquisition path and underlying services that returned 500, fix the root cause, then re‑run the suite.",
+      "final_outcome": "error",
+      "failed_attempts": 3,
+      "attempts": 3
+    },
+    {
+      "test_id": "tests/api/test_smoke_api.py::test_token_then_list_test_cases",
+      "case_id": null,
+      "bucket": "environment_issue",
+      "confidence": 0.92,
+      "evidence": [
+        "signals.http_5xx_seen: true",
+        "attempts[0].api_last_exchange.status: 500",
+        "attempts[1].api_last_exchange.status: 500",
+        "attempts[0].health_at_failure.status: 503"
+      ],
+      "reasoning": "Rule 2 applied because a 5xx response was seen in every attempt.",
+      "suggested_next_action": "Investigate backend/API services (e.g., database health) and resolve the 5xx errors, then re‑run the test.",
+      "final_outcome": "failed",
+      "failed_attempts": 3,
+      "attempts": 3
+    }
+  ],
+  "llm_calls": [
+    {
+      "chunk": 1,
+      "tests": 4,
+      "attempts": 1,
+      "valid": true,
+      "latency_s": 3.18,
+      "finish_reason": "stop",
+      "usage": {
+        "queue_time": 0.352993262,
+        "prompt_tokens": 5068,
+        "prompt_time": 0.370613992,
+        "completion_tokens": 1102,
+        "completion_time": 2.291497705,
+        "total_tokens": 6170,
+        "total_time": 2.6621116970000003,
+        "completion_tokens_details": {
+          "reasoning_tokens": 519
+        }
+      },
+      "errors": []
+    },
+    {
+      "chunk": 2,
+      "tests": 4,
+      "attempts": 1,
+      "valid": true,
+      "latency_s": 30.38,
+      "finish_reason": "stop",
+      "usage": {
+        "queue_time": 0.049064484,
+        "prompt_tokens": 5075,
+        "prompt_time": 0.245219029,
+        "completion_tokens": 1328,
+        "completion_time": 2.7765693369999997,
+        "total_tokens": 6403,
+        "total_time": 3.021788366,
+        "completion_tokens_details": {
+          "reasoning_tokens": 657
+        }
+      },
+      "errors": []
+    },
+    {
+      "chunk": 3,
+      "tests": 4,
+      "attempts": 1,
+      "valid": true,
+      "latency_s": 45.54,
+      "finish_reason": "stop",
+      "usage": {
+        "queue_time": 0.348681797,
+        "prompt_tokens": 5067,
+        "prompt_time": 0.223998539,
+        "completion_tokens": 1220,
+        "completion_time": 2.55541142,
+        "total_tokens": 6287,
+        "total_time": 2.779409959,
+        "completion_tokens_details": {
+          "reasoning_tokens": 573
+        }
+      },
+      "errors": []
+    },
+    {
+      "chunk": 4,
+      "tests": 3,
+      "attempts": 1,
+      "valid": true,
+      "latency_s": 48.1,
+      "finish_reason": "stop",
+      "usage": {
+        "queue_time": 0.455927693,
+        "prompt_tokens": 4884,
+        "prompt_time": 0.32199985,
+        "completion_tokens": 788,
+        "completion_time": 1.889671125,
+        "total_tokens": 5672,
+        "total_time": 2.211670975,
+        "prompt_tokens_details": {
+          "cached_tokens": 1280
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 365
+        }
+      },
+      "errors": []
+    },
+    {
+      "chunk": 5,
+      "tests": 3,
+      "attempts": 2,
+      "valid": true,
+      "latency_s": 81.92,
+      "finish_reason": "stop",
+      "usage": {
+        "first": {
+          "queue_time": 0.055062283,
+          "prompt_tokens": 5033,
+          "prompt_time": 0.26502152,
+          "completion_tokens": 800,
+          "completion_time": 1.6616460370000001,
+          "total_tokens": 5833,
+          "total_time": 1.926667557,
+          "completion_tokens_details": {
+            "reasoning_tokens": 421
+          }
+        },
+        "retry": {
+          "queue_time": 0.349667726,
+          "prompt_tokens": 5552,
+          "prompt_time": 0.272674061,
+          "completion_tokens": 639,
+          "completion_time": 1.32466287,
+          "total_tokens": 6191,
+          "total_time": 1.597336931,
+          "completion_tokens_details": {
+            "reasoning_tokens": 245
+          }
+        }
+      },
+      "errors": []
+    },
+    {
+      "chunk": 6,
+      "tests": 3,
+      "attempts": 1,
+      "valid": true,
+      "latency_s": 41.61,
+      "finish_reason": "stop",
+      "usage": {
+        "queue_time": 0.347388107,
+        "prompt_tokens": 4878,
+        "prompt_time": 0.242822733,
+        "completion_tokens": 836,
+        "completion_time": 1.7416210269999999,
+        "total_tokens": 5714,
+        "total_time": 1.98444376,
+        "completion_tokens_details": {
+          "reasoning_tokens": 412
+        }
+      },
+      "errors": []
+    },
+    {
+      "chunk": 7,
+      "tests": 3,
+      "attempts": 1,
+      "valid": true,
+      "latency_s": 42.53,
+      "finish_reason": "stop",
+      "usage": {
+        "queue_time": 0.214605024,
+        "prompt_tokens": 4868,
+        "prompt_time": 0.280967329,
+        "completion_tokens": 848,
+        "completion_time": 1.7646847239999999,
+        "total_tokens": 5716,
+        "total_time": 2.045652053,
+        "completion_tokens_details": {
+          "reasoning_tokens": 413
+        }
+      },
+      "errors": []
+    },
+    {
+      "chunk": 8,
+      "tests": 3,
+      "attempts": 2,
+      "valid": true,
+      "latency_s": 65.1,
+      "finish_reason": "stop",
+      "usage": {
+        "first": {
+          "queue_time": 0.348755002,
+          "prompt_tokens": 4796,
+          "prompt_time": 0.130034807,
+          "completion_tokens": 785,
+          "completion_time": 1.6342409789999999,
+          "total_tokens": 5581,
+          "total_time": 1.764275786,
+          "prompt_tokens_details": {
+            "cached_tokens": 2816
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 420
+          }
+        },
+        "retry": {
+          "queue_time": 0.04969416,
+          "prompt_tokens": 5281,
+          "prompt_time": 0.250603793,
+          "completion_tokens": 500,
+          "completion_time": 1.041894866,
+          "total_tokens": 5781,
+          "total_time": 1.292498659,
+          "completion_tokens_details": {
+            "reasoning_tokens": 145
+          }
+        }
+      },
+      "errors": []
+    },
+    {
+      "chunk": 9,
+      "tests": 3,
+      "attempts": 2,
+      "valid": true,
+      "latency_s": 67.5,
+      "finish_reason": "stop",
+      "usage": {
+        "first": {
+          "queue_time": 0.04871628,
+          "prompt_tokens": 4817,
+          "prompt_time": 0.141581019,
+          "completion_tokens": 842,
+          "completion_time": 1.7921314179999999,
+          "total_tokens": 5659,
+          "total_time": 1.933712437,
+          "prompt_tokens_details": {
+            "cached_tokens": 2816
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 378
+          }
+        },
+        "retry": {
+          "queue_time": 0.055120004,
+          "prompt_tokens": 5401,
+          "prompt_time": 0.327166403,
+          "completion_tokens": 660,
+          "completion_time": 1.37415076,
+          "total_tokens": 6061,
+          "total_time": 1.7013171630000001,
+          "completion_tokens_details": {
+            "reasoning_tokens": 181
+          }
+        }
+      },
+      "errors": []
+    },
+    {
+      "chunk": 10,
+      "tests": 3,
+      "attempts": 1,
+      "valid": true,
+      "latency_s": 40.64,
+      "finish_reason": "stop",
+      "usage": {
+        "queue_time": 0.21348278,
+        "prompt_tokens": 4825,
+        "prompt_time": 0.196040168,
+        "completion_tokens": 849,
+        "completion_time": 1.748977247,
+        "total_tokens": 5674,
+        "total_time": 1.9450174150000001,
+        "completion_tokens_details": {
+          "reasoning_tokens": 415
+        }
+      },
+      "errors": []
+    },
+    {
+      "chunk": 11,
+      "tests": 3,
+      "attempts": 1,
+      "valid": true,
+      "latency_s": 43.73,
+      "finish_reason": "stop",
+      "usage": {
+        "queue_time": 0.054335526,
+        "prompt_tokens": 4861,
+        "prompt_time": 0.102647623,
+        "completion_tokens": 992,
+        "completion_time": 2.061087375,
+        "total_tokens": 5853,
+        "total_time": 2.163734998,
+        "prompt_tokens_details": {
+          "cached_tokens": 2816
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 539
+        }
+      },
+      "errors": []
+    },
+    {
+      "chunk": 12,
+      "tests": 1,
+      "attempts": 2,
+      "valid": true,
+      "latency_s": 43.2,
+      "finish_reason": "stop",
+      "usage": {
+        "first": {
+          "queue_time": 0.398152581,
+          "prompt_tokens": 3573,
+          "prompt_time": 0.179165508,
+          "completion_tokens": 374,
+          "completion_time": 0.792352346,
+          "total_tokens": 3947,
+          "total_time": 0.971517854,
+          "completion_tokens_details": {
+            "reasoning_tokens": 226
+          }
+        },
+        "retry": {
+          "queue_time": 0.050485889,
+          "prompt_tokens": 3776,
+          "prompt_time": 0.175163769,
+          "completion_tokens": 313,
+          "completion_time": 0.644356451,
+          "total_tokens": 4089,
+          "total_time": 0.81952022,
+          "completion_tokens_details": {
+            "reasoning_tokens": 160
+          }
+        }
+      },
+      "errors": []
+    }
+  ]
+}

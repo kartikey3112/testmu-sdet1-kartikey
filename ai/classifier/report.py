@@ -92,8 +92,15 @@ def _summary_html(report: "ClassificationReport") -> str:
         f"<td>{html.escape(c.reasoning)}</td></tr>"
         for c in report.classifications
     )
+    style = (
+        "<style>.testmu-llm-summary{border:1px solid #c9d2e3;border-radius:6px;padding:12px 16px;"
+        "margin:12px 0;background:#f7f9fc;color:#1d2330}"
+        ".testmu-llm-summary table{border-collapse:collapse;width:100%;margin-top:8px}"
+        ".testmu-llm-summary th,.testmu-llm-summary td{text-align:left;padding:4px 8px;"
+        "border-bottom:1px solid #dde1e8;vertical-align:top;color:#1d2330}</style>"
+    )
     return (
-        "<div class='testmu-llm-summary'>"
+        f"{style}<div class='testmu-llm-summary'>"
         "<h2>LLM failure classification (Flaky Test Classifier)</h2>"
         f"<p>{s.failed} of {s.total} tests had a failed attempt. Model "
         f"<code>{html.escape(report.model)}</code>, prompt "

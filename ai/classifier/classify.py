@@ -28,7 +28,14 @@ from typing import Any, Literal
 from pydantic import BaseModel, ConfigDict, Field, ValidationError, field_validator
 
 from ai.classifier import payload as payload_builder
-from ai.llm_client import ChatResult, LLMConfigError, LLMError, chat, load_llm_config
+from ai.llm_client import (
+    ChatResult,
+    LLMConfigError,
+    LLMError,
+    LLMQuotaError,
+    chat,
+    load_llm_config,
+)
 
 ROOT = Path(__file__).resolve().parents[2]
 PROMPTS_DIR = ROOT / "prompts"
@@ -229,8 +236,15 @@ def load_records(run_dir: Path) -> list[dict[str, Any]]:
 
 
 def classify_run(run_dir: Path, chat_fn: ChatFn = chat, prompt_version: str = PROMPT_VERSION,
-                 budget_chars: int = payload_builder.DEFAULT_CHUNK_CHARS
-                 ) -> ClassificationReport:
+                 budget_chars: int = payload_builder.DEFAULT_CHUNK_CHARS,
+                 raise_on_quota: bool = False) -> ClassificationReport:
+    """Classify every failing test in a run and write classification.json / .md.
+
+    If the provider's quota runs out (LLMQuotaError), the remaining chunks are not attempted:
+    their tests are written as `unclassified` with the reason, or, with raise_on_quota, the
+    error is raised and nothing is written (the evaluation uses that, so it never scores a
+    run that could not be classified).
+    """
     config = load_llm_config()  # raises LLMConfigError before anything is written
     system_prompt, prompt_sha = load_prompt(prompt_version)
     records = load_records(run_dir)
@@ -239,9 +253,19 @@ def classify_run(run_dir: Path, chat_fn: ChatFn = chat, prompt_version: str = PR
 
     results: dict[str, LLMClassification] = {}
     calls: list[LLMCall] = []
+    not_sent: set[str] = set()
     for i, request in enumerate(requests, start=1):
         try:
             valid, call = classify_chunk(system_prompt, request, i, chat_fn, config=config)
+        except LLMQuotaError as exc:
+            if raise_on_quota:
+                raise
+            calls.append(LLMCall(chunk=i, tests=len(request["tests"]), attempts=0, valid=False,
+                                 latency_s=0, finish_reason=None, usage={},
+                                 errors=[f"quota exhausted; chunks {i}-{len(requests)} not sent:"
+                                         f" {str(exc)[:300]}"]))
+            not_sent = {t["test_id"] for r in requests[i - 1:] for t in r["tests"]}
+            break
         except LLMError as exc:
             call = LLMCall(chunk=i, tests=len(request["tests"]), attempts=0, valid=False,
                            latency_s=0, finish_reason=None, usage={}, errors=[str(exc)[:300]])
@@ -257,7 +281,10 @@ def classify_run(run_dir: Path, chat_fn: ChatFn = chat, prompt_version: str = PR
         if item is None:
             classifications.append(Classification(
                 test_id=test_id, case_id=attempts[0].get("case_id"), bucket="unclassified",
-                confidence=None, evidence=[], reasoning="No valid classification after one retry.",
+                confidence=None, evidence=[],
+                reasoning=("Not sent: the LLM quota ran out before this test's chunk."
+                           if test_id in not_sent
+                           else "No valid classification after one retry."),
                 suggested_next_action="Triage manually.", final_outcome=final,
                 failed_attempts=failed_count, attempts=len(attempts)))
         else:
