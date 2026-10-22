@@ -14,7 +14,7 @@ Why Option B (Flaky Test Classifier) and not Option A (Failure Explainer):
 - Part of A's value is kept: every classification carries evidence and a suggested next
   action. A full Failure Explainer reusing this collector is listed as "next" in the README.
 
-DRAFT: Kartikey to rewrite this rationale in his own words.
+Drafted with Claude Code; reviewed and approved by Kartikey without changes (2026-10-23).
 
 Modules:
   collector.py  pytest plugin: one JSON line per test attempt -> execution-log.jsonl
