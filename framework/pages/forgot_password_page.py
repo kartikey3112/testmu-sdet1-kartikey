@@ -1,0 +1,1 @@
+"""ForgotPasswordPage page object."""

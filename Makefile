@@ -1,0 +1,35 @@
+# Each target is a thin wrapper; the README lists the raw command for each one.
+PY ?= python
+MODULE ?= login
+VERSION ?= v1
+RUN ?=
+
+.PHONY: setup app test test-ui test-api generate classify eval lint
+
+setup:
+	$(PY) -m pip install -r requirements.txt
+	$(PY) -m playwright install chromium
+
+app:
+	$(PY) -m uvicorn app.main:app --reload
+
+test:
+	$(PY) -m pytest
+
+test-ui:
+	$(PY) -m pytest -m ui
+
+test-api:
+	$(PY) -m pytest -m api
+
+generate:
+	$(PY) -m scripts.generate_tests --module $(MODULE) --version $(VERSION)
+
+classify:
+	$(PY) -m ai.classifier.classify --run $(RUN)
+
+eval:
+	$(PY) -m scripts.eval_classifier
+
+lint:
+	$(PY) -m ruff check .

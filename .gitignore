@@ -1,0 +1,25 @@
+# Secrets
+.env
+
+# Run output
+reports/
+test-results/
+playwright-report/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+
+# Local app data
+*.sqlite3
+*.db
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
