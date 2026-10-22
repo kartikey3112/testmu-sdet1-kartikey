@@ -1,7 +1,7 @@
 <!--
 Per-module notes for prompts.md: what didn't work the first time and what changed.
 Drafted from the saved validation reports (generated/raw/*.report.md) and prompts/revisions.md.
-status: DRAFT - Kartikey to confirm or rewrite
+status: kept unchanged by Kartikey ("go ahead") on 2026-10-23
 -->
 
 ## login
