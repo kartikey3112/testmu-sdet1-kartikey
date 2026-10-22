@@ -18,7 +18,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-MAX_RETRIES = 5  # 2+4+8+16+32 s of backoff covers a one-minute rate-limit window
+MAX_RETRIES = 6  # 2+4+8+16+32+60 s of backoff: the free-tier TPM window can need over a minute
 BACKOFF_BASE_S = 2.0
 MAX_BACKOFF_S = 60.0
 

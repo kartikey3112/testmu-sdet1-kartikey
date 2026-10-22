@@ -1,0 +1,72 @@
+{
+  "module": "api",
+  "truncated": false,
+  "json_error": null,
+  "schema_errors": [],
+  "case_count": 17,
+  "case_count_ok": true,
+  "coverage": {
+    "auth token validation": {
+      "cases": [
+        "API-001",
+        "API-002",
+        "API-003",
+        "API-004",
+        "API-018"
+      ],
+      "positive": 1,
+      "negative_boundary_security": 4
+    },
+    "CRUD operations": {
+      "cases": [
+        "API-005",
+        "API-006",
+        "API-007",
+        "API-008",
+        "API-009"
+      ],
+      "positive": 3,
+      "negative_boundary_security": 2
+    },
+    "error handling (4xx/5xx)": {
+      "cases": [
+        "API-010",
+        "API-011",
+        "API-012",
+        "API-013"
+      ],
+      "positive": 0,
+      "negative_boundary_security": 4
+    },
+    "rate limiting": {
+      "cases": [
+        "API-014",
+        "API-015"
+      ],
+      "positive": 1,
+      "negative_boundary_security": 1
+    },
+    "schema validation": {
+      "cases": [
+        "API-016"
+      ],
+      "positive": 1,
+      "negative_boundary_security": 0
+    }
+  },
+  "coverage_gaps": [
+    "'error handling (4xx/5xx)' has no positive case",
+    "'schema validation' has no negative/boundary/security case"
+  ],
+  "coverage_map_issues": [],
+  "id_issues": [
+    "ids are not sequential from 001: ['API-001', 'API-002', 'API-003', 'API-004', 'API-005', 'API-006', 'API-007', 'API-008', 'API-009', 'API-010', 'API-011', 'API-012', 'API-013', 'API-014', 'API-015', 'API-016', 'API-018']"
+  ],
+  "duplicate_titles": [],
+  "vague_expectations": [],
+  "hardcoded_credentials": [],
+  "typographic_characters": [],
+  "open_questions": [],
+  "automation_candidates": 17,
+  "passed": false
+}
