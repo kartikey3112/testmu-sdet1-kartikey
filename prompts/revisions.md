@@ -67,3 +67,30 @@ API only:
 |---|---|
 | Table of exact error messages per code, copied from `app/api.py` | Review: API-002 and API-015 invented message texts |
 | Error handling must include 404, 405, 422 and 500 cases | Review: v2 error handling had only the 500 case; v1's 4xx cases disappeared |
+
+## v4 (Login and API only), from the v3 runs on 2026-10-22
+
+Reports: `login.v3.20261022T191735Z`, `api.v3.20261022T192144Z`. Dashboard v3 passed and was
+accepted, so it has no v4.
+
+The brief aims for three versions or fewer. Kartikey chose to write a v4 for these two modules
+rather than accept v3 with documented gaps.
+
+Common to both prompts:
+
+| Change | Problem it fixes |
+|---|---|
+| SELF-CHECK makes the model count positive and negative/boundary/security cases per area and add a case where a count is 0 | Report: a positive or negative gap appeared in a different area in every version (Login: invalid credentials in v1, valid login in v2, session expiry in v3; API: error handling and schema validation), even though v2 already defined positive per area |
+
+Login only:
+
+| Change | Problem it fixes |
+|---|---|
+| CONTEXT says which side of each expiry boundary wins (reset token and session are expired at exactly 30 min / 1800 s; the lock has run out at exactly 15 min) | Review: LOGIN-009 claimed a reset link still works at exactly 30 minutes; the app rejects it |
+
+API only:
+
+| Change | Problem it fixes |
+|---|---|
+| Error-handling recovery is its own `positive` case; a case that only triggers the error is `negative` | Report: no positive case for error handling; API-013 combined the 500 and the recovery and was labelled negative |
+| Schema validation negative/boundary cases defined (error body shape, empty page shape) | Report: schema validation had only one case, and no negative/boundary case |
