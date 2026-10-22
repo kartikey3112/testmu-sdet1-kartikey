@@ -125,3 +125,25 @@ These are choices the brief left open. They are written here so the test-generat
 - **Flakiness found and fixed:** LOGIN-010 (session expiry) failed about 2 runs in 3. Widget requests from the post-login page load could reach the server after the clock jump, expire and delete the session first. The test now waits for the dashboard to finish loading. After the fix: 10 of 10 passes alone, and 3 full-suite runs of 37 of 37.
 - **Rate-limit tests** move the app clock to the start of a fresh minute first, so a burst can't straddle two windows.
 - **Tests can fail:** with each injected `real_bug` fault, exactly the targeted tests fail: `BUG_PASS_RATE_OFF_BY_ONE` → DASH-005; `BUG_DELETE_NOT_PERSISTED` → API-009; `BUG_LOCKOUT_THRESHOLD_WRONG` → LOGIN-012 and LOGIN-013.
+
+## D20. Classifier payload: compact, redacted, chunked, with code-computed signals
+
+- **Decision:** only tests with a failed attempt are sent. The first failed attempt carries full detail; later attempts carry a short form (type, message, location, status, health). Repeated browser errors are collapsed with a count, local origins are stripped from URLs, and Playwright's call log is dropped from messages.
+- **Why:** the first dry run (3 faults, `--reruns 2`, 10 failing tests) produced 10 chunks of about 9.8k characters each, one test per chunk, because every rerun repeated the same 2.4k characters. After compaction it is 4 chunks. The free Groq tier allows 8,000 tokens per minute for prompt, payload and answer together.
+- **Signals are computed in code and passed as hints:** `passed_on_rerun`, `same_error_all_attempts` (on normalised messages), `error_category_heuristic`, `http_5xx_seen`, `health_ok_at_failure`, duration spread.
+  - Two problems found in the dry run shaped them. Every Playwright `expect()` failure contains "with timeout 5000ms" in its call log, so categories use the first line of the message only.
+  - With `ENV_WIDGET_API_503`, UI tests fail as assertions while the 503s appear only in the browser's network log, hence `http_5xx_seen`.
+- **Ground truth isolation:** active faults are written to `run-meta.json` for evaluation only. The payload builder never reads it, and a unit test checks this.
+
+## D21. Classifier output is validated and never guessed
+
+- **Decision:** the response must parse as the Pydantic schema, include every test in the chunk exactly once with its exact `case_id`, keep reasoning to at most 3 sentences, and cite only evidence fields that exist in that test's payload (paths are resolved).
+  - Any problem triggers one retry with the problems listed.
+  - Anything still invalid is `unclassified`.
+  - `run_summary` is computed in code, not by the model.
+- **Why:** a plausible but unsupported label is worse than "unclassified" for triage. Checking the evidence paths stops the model from citing facts that are not in its input.
+
+## D22. Showing results inside the pytest-html report
+
+- **Decision:** classification runs in our `pytest_sessionfinish`, before pytest-html's own (which is `trylast`) writes the file. The run summary goes into pytest-html's summary list. The "LLM bucket" column and per-test blocks are added to the row data pytest-html holds until then.
+- **Trade-off:** that row data is internal to pytest-html, so `pytest-html==4.2.0` is pinned and the code says why. `make classify RUN=<id>` also writes standalone `classification.json` and `classification.md`.
