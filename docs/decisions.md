@@ -48,3 +48,27 @@ Each entry: the decision, the alternatives considered, and why.
 
 - **Decision:** `* text=auto eol=lf`.
 - **Why:** prompts are stored byte-for-byte and hashed (SHA-256) in generation metadata. Without this, Git on Windows would check them out with CRLF and the hashes would differ between machines. It also keeps the `Makefile` valid on Linux CI.
+
+## D9. Test clock instead of waiting in real time
+
+- **Decision:** the app reads time from one `clock` (`app/settings.py`). In TEST_MODE, `POST /_test/clock {"advance_seconds": N}` moves it forward. Session expiry, lockout expiry, reset-token expiry, JWT expiry and the rate-limit window all use it.
+- **Alternatives:** tiny TTLs set by env var and waiting them out; editing rows in the DB from tests.
+- **Why:** expiry tests stay fast and deterministic, with no sleeps (a ground rule). Tests use the real rules rather than reaching into the database. JWT expiry is checked against this clock, not PyJWT's built-in check.
+
+## D10. Dashboard widget endpoints live under `/api/v1/dashboard` and accept session or token
+
+- **Decision:** the browser calls them with its session cookie; API tests call them with a bearer token. Same endpoint, same 403 for viewers.
+- **Why:** one source of each number, so a test can assert UI value == API value == expected-from-seed. Permission checks are tested once at the API level and once in the UI.
+
+## D11. How some edge behaviours are defined
+
+These are choices the brief left open. They are written here so the test-generation prompts can quote them instead of guessing.
+
+- **Lockout:** the failure that reaches the threshold returns the lockout message (HTTP 423), not the generic one. A correct password during the lock is still refused. Unknown emails never count towards a lockout. When a lock runs out, counting starts again from zero. The API token endpoint shares the same counter, so the API can't be used to get around the lockout.
+- **Sessions:** fixed lifetime from login (not sliding). Expired session → 303 to `/login?reason=expired`.
+- **Password reset:** minimum 8 characters, confirmation must match. A successful reset clears the lockout and signs the user out everywhere.
+- **Update is `PATCH`** (partial). Titles are unique case-insensitively and trimmed; blank titles get a 422.
+- **500 path:** `ENV_DB_UNAVAILABLE` makes every DB connection fail; the unhandled error becomes a 500 in the standard error body. `/health` reports `database: fail` with a 503 at the same time.
+- **Rate limit:** a fixed one-minute window per bearer token. Request number `RATE_LIMIT_PER_MIN + 1` gets a 429 with `Retry-After` (seconds until the window resets). Session-cookie calls from the UI are not rate limited.
+- **Recent runs:** newest first by default. Sorting by pass rate breaks ties newest first. `date_from` after `date_to` returns 422.
+- **Not implemented:** CSRF protection on forms. The app is only ever run locally for testing.
