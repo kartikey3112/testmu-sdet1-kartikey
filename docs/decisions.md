@@ -72,3 +72,29 @@ These are choices the brief left open. They are written here so the test-generat
 - **Rate limit:** a fixed one-minute window per bearer token. Request number `RATE_LIMIT_PER_MIN + 1` gets a 429 with `Retry-After` (seconds until the window resets). Session-cookie calls from the UI are not rate limited.
 - **Recent runs:** newest first by default. Sorting by pass rate breaks ties newest first. `date_from` after `date_to` returns 422.
 - **Not implemented:** CSRF protection on forms. The app is only ever run locally for testing.
+
+## D12. Cached role logins with `storage_state`, kept across per-test resets
+
+- **Decision:** every UI/API test starts with `POST /_test/reset?keep_sessions=true`. Admin and viewer each log in once over HTTP; the session cookie becomes Playwright `storage_state`. Before each use the session is checked, and if it has gone (e.g. a test moved the clock past the TTL) the role logs in again.
+- **Alternatives:** log in through the UI in every test; reset only some tables.
+- **Why:** a full reset keeps tests independent. Keeping sessions avoids a UI login per test. The login page still gets its own tests.
+
+## D13. Response schemas are written on the test side
+
+- **Decision:** `framework/schemas.py` holds hand-written JSON Schemas with `additionalProperties: false`, checked with `jsonschema`. It does not use the app's `/openapi.json`. `rfc3339-validator` is installed so `date-time` formats are really checked; without it jsonschema silently skips them.
+- **Why:** validating the app against its own generated schema would pass even when the app changes by mistake.
+
+## D14. Markers come from folders
+
+- **Decision:** `tests/conftest.py` adds `ui`/`api`/`unit` and `login`/`dashboard` markers from the test's path. `smoke` and `case(id)` are set by hand.
+- **Why:** less repetition, and no test can be filed under one folder but marked as another.
+
+## D15. One `time.sleep`, in server start-up only
+
+- **Decision:** `framework/app_server.py` polls `/health` every 0.1 s while the uvicorn subprocess starts. No test waits with `sleep`; tests use Playwright web-first assertions and the test clock.
+- **Why:** waiting for a separate process to accept connections has no event to wait on. It runs once per session, during fixture setup, and stops at a deadline.
+
+## D16. Task 3 hook point: `pytest_testmu_attempt_finished`
+
+- **Decision:** the framework collects evidence per test attempt: console errors, failed requests, page URL, screenshot and trace paths, and the last API exchange with tokens redacted. After each attempt it calls a custom hook (`framework/hookspecs.py`). The Phase 5 collector will implement that hook to write `execution-log.jsonl`.
+- **Why:** the classifier needs per-attempt data including reruns. A hook keeps the classifier out of the framework code, so it can be turned off or replaced.
