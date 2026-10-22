@@ -1,0 +1,74 @@
+{
+  "module": "api",
+  "truncated": false,
+  "json_error": null,
+  "schema_errors": [],
+  "case_count": 24,
+  "case_count_ok": true,
+  "coverage": {
+    "auth token validation": {
+      "cases": [
+        "API-001",
+        "API-002",
+        "API-003",
+        "API-004"
+      ],
+      "positive": 1,
+      "negative_boundary_security": 3
+    },
+    "CRUD operations": {
+      "cases": [
+        "API-005",
+        "API-006",
+        "API-007",
+        "API-008",
+        "API-009",
+        "API-010",
+        "API-011",
+        "API-012",
+        "API-013"
+      ],
+      "positive": 5,
+      "negative_boundary_security": 4
+    },
+    "error handling (4xx/5xx)": {
+      "cases": [
+        "API-014",
+        "API-015",
+        "API-016",
+        "API-017",
+        "API-018"
+      ],
+      "positive": 1,
+      "negative_boundary_security": 4
+    },
+    "rate limiting": {
+      "cases": [
+        "API-019",
+        "API-020"
+      ],
+      "positive": 1,
+      "negative_boundary_security": 1
+    },
+    "schema validation": {
+      "cases": [
+        "API-021",
+        "API-022",
+        "API-023",
+        "API-024"
+      ],
+      "positive": 2,
+      "negative_boundary_security": 2
+    }
+  },
+  "coverage_gaps": [],
+  "coverage_map_issues": [],
+  "id_issues": [],
+  "duplicate_titles": [],
+  "vague_expectations": [],
+  "hardcoded_credentials": [],
+  "typographic_characters": [],
+  "open_questions": [],
+  "automation_candidates": 24,
+  "passed": true
+}

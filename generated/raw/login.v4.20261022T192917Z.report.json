@@ -1,0 +1,68 @@
+{
+  "module": "login",
+  "truncated": false,
+  "json_error": null,
+  "schema_errors": [],
+  "case_count": 15,
+  "case_count_ok": true,
+  "coverage": {
+    "valid login": {
+      "cases": [
+        "LOGIN-001",
+        "LOGIN-002",
+        "LOGIN-003"
+      ],
+      "positive": 1,
+      "negative_boundary_security": 2
+    },
+    "invalid credentials": {
+      "cases": [
+        "LOGIN-004",
+        "LOGIN-005"
+      ],
+      "positive": 1,
+      "negative_boundary_security": 1
+    },
+    "forgot password": {
+      "cases": [
+        "LOGIN-006",
+        "LOGIN-007",
+        "LOGIN-008"
+      ],
+      "positive": 1,
+      "negative_boundary_security": 2
+    },
+    "session expiry": {
+      "cases": [
+        "LOGIN-009",
+        "LOGIN-010",
+        "LOGIN-011"
+      ],
+      "positive": 1,
+      "negative_boundary_security": 2
+    },
+    "brute-force lockout": {
+      "cases": [
+        "LOGIN-012",
+        "LOGIN-013",
+        "LOGIN-014",
+        "LOGIN-015"
+      ],
+      "positive": 1,
+      "negative_boundary_security": 3
+    }
+  },
+  "coverage_gaps": [],
+  "coverage_map_issues": [],
+  "id_issues": [],
+  "duplicate_titles": [],
+  "vague_expectations": [],
+  "hardcoded_credentials": [],
+  "typographic_characters": [
+    "LOGIN-006: U+2011",
+    "LOGIN-015: U+2011"
+  ],
+  "open_questions": [],
+  "automation_candidates": 15,
+  "passed": false
+}
