@@ -4,10 +4,12 @@ Each pytest session writes to reports/run-<id>/:
   report.html   self-contained pytest-html report
   junit.xml     JUnit XML
   artifacts/    screenshots and Playwright traces of failed attempts
+  case-results.json  outcome per test linked to a generated case
 """
 
 import base64
 import html
+import json
 import re
 from datetime import datetime
 from pathlib import Path
@@ -65,6 +67,35 @@ def test_failed(item: pytest.Item) -> bool:
     return any(r.failed for r in reports.values())
 
 
+CASE_RESULTS_KEY = pytest.StashKey[dict[str, dict]]()
+
+
+def pytest_sessionstart(session: pytest.Session) -> None:
+    session.config.stash[CASE_RESULTS_KEY] = {}
+
+
+def _record_case_result(item: pytest.Item, report: pytest.TestReport) -> None:
+    """Keep the latest outcome of every test linked to a generated case (@pytest.mark.case).
+
+    Written to case-results.json at session end; scripts/build_traceability.py reads it.
+    """
+    case_ids = [m.args[0] for m in item.iter_markers("case")]
+    if not case_ids:
+        return
+    if report.when == "call" or not report.passed:
+        results = item.config.stash[CASE_RESULTS_KEY]
+        results[item.nodeid] = {"cases": case_ids, "outcome": report.outcome,
+                                "attempt": attempt_number(item)}
+
+
+def pytest_sessionfinish(session: pytest.Session) -> None:
+    results = session.config.stash.get(CASE_RESULTS_KEY, {})
+    if results:
+        path = run_dir(session.config) / "case-results.json"
+        path.write_text(json.dumps(results, indent=2, sort_keys=True) + "\n",
+                        encoding="utf-8", newline="\n")
+
+
 def pytest_html_report_title(report) -> None:
     report.title = "TestMu Lite test report"
 
@@ -80,6 +111,7 @@ def pytest_runtest_makereport(item: pytest.Item, call: pytest.CallInfo):
     outcome = yield
     report: pytest.TestReport = outcome.get_result()
     item.stash.setdefault(REPORTS_KEY, {})[report.when] = report
+    _record_case_result(item, report)
 
     if report.failed and report.when in ("setup", "call"):
         _capture_failure(item, report)

@@ -114,3 +114,14 @@ These are choices the brief left open. They are written here so the test-generat
   - The runner sets `max_completion_tokens = 16384` and records `finish_reason`. A truncated response always fails validation.
   - The LLM client treats 413 `rate_limit_exceeded` like 429 and backs off for up to about 62 s, honouring `Retry-After`.
 - **Why:** these are request settings, not prompt problems, so v1 was re-run unchanged (same SHA-256). The truncated first run is kept in `generated/raw/` as evidence.
+
+## D19. Which generated cases were automated, and how
+
+- **Decision:** every P0 `automation_candidate` case was automated, plus a few P1/P2 cases so that each required coverage area has at least one automated test: 11 Login, 11 Dashboard, 12 API. Each test is linked with `@pytest.mark.case("<ID>")`, and `docs/traceability.md` is generated from the run.
+- **Expected results come from the case.** Where a case could not be run as written, the test docstring says what was adapted. For example, API-009 hard-codes id 26, so the test deletes the id its own create call returned.
+- **Cases with a wrong expectation are not "fixed" to pass.** They are left out with the reason recorded:
+  - DASH-010: tampered cookie, expects `?reason=expired`. Confirmed wrong by running it as generated.
+  - DASH-008: expects the error code where the UI shows the message.
+- **Flakiness found and fixed:** LOGIN-010 (session expiry) failed about 2 runs in 3. Widget requests from the post-login page load could reach the server after the clock jump, expire and delete the session first. The test now waits for the dashboard to finish loading. After the fix: 10 of 10 passes alone, and 3 full-suite runs of 37 of 37.
+- **Rate-limit tests** move the app clock to the start of a fresh minute first, so a burst can't straddle two windows.
+- **Tests can fail:** with each injected `real_bug` fault, exactly the targeted tests fail: `BUG_PASS_RATE_OFF_BY_ONE` → DASH-005; `BUG_DELETE_NOT_PERSISTED` → API-009; `BUG_LOCKOUT_THRESHOLD_WRONG` → LOGIN-012 and LOGIN-013.

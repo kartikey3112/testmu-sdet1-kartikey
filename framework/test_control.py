@@ -1,6 +1,7 @@
 """Client for the app's TEST_MODE-only endpoints: reset, faults, clock and outbox."""
 
 import re
+from datetime import datetime
 
 import httpx
 
@@ -24,6 +25,16 @@ class TestControl:
 
     def advance_clock(self, seconds: float) -> None:
         self.http.post("/_test/clock", json={"advance_seconds": seconds}).raise_for_status()
+
+    def advance_to_next_minute(self) -> None:
+        """Move the app clock just past the next minute boundary.
+
+        The rate limiter uses fixed calendar-minute windows. Starting a burst right after a
+        boundary means it can't be split across two windows by chance.
+        """
+        now = self.http.get("/_test/clock").raise_for_status().json()["now"]
+        seconds_into_minute = datetime.fromisoformat(now).timestamp() % 60
+        self.advance_clock(60 - seconds_into_minute + 0.5)
 
     def outbox(self, to: str | None = None) -> list[dict]:
         params = {"to": to} if to else {}

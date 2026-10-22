@@ -4,7 +4,7 @@ MODULE ?= login
 VERSION ?= v1
 RUN ?=
 
-.PHONY: setup app reset-db test test-ui test-api generate gherkin prompts-md classify eval lint
+.PHONY: setup app reset-db test test-ui test-api generate gherkin prompts-md traceability classify eval lint
 
 setup:
 	$(PY) -m pip install -r requirements.txt
@@ -33,6 +33,9 @@ gherkin:
 
 prompts-md:
 	$(PY) -m scripts.build_prompts_md
+
+traceability:
+	$(PY) -m scripts.build_traceability
 
 classify:
 	$(PY) -m ai.classifier.classify --run $(RUN)
