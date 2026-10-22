@@ -160,3 +160,10 @@ These are choices the brief left open. They are written here so the test-generat
   - The evaluation raises instead, so it never writes a score for an unclassified run. `--reuse <stamp>` resumes from the saved runs.
   - The flaky run's quota-failed classification is kept next to the new one (`classification.quota-failed.json`).
 - **Observed refill:** Groq's own wait times imply the daily budget refills at about 139 tokens per minute (200,000 / 1,440).
+
+## D24. CI on GitHub-hosted runners, no secrets in the main job
+
+- **Decision:** `.github/workflows/ci.yml` on `ubuntu-latest` with Python 3.14, the version the pins were resolved on.
+  - **Main job** (push and pull request): ruff, a `prompts.md` consistency check, then unit, API and UI tests against the clean app. Reports and traceability are uploaded as artifacts. `TESTMU_CLASSIFY=0`, so it never needs `LLM_API_KEY`.
+  - **`fault-demo` job:** `workflow_dispatch` only. It runs a chosen fault set with `--reruns 2` and classifies only if the `LLM_API_KEY` secret exists; otherwise it posts a notice. It uploads the classified report.
+- **Why:** the main job must be green and runnable on any fork with no secrets. LLM calls cost free-tier quota (see D23), so they only run when someone asks for them.

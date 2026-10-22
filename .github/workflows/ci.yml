@@ -1,0 +1,120 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      faults:
+        description: "Comma-separated faults for the fault-demo job (names from app/faults.py)"
+        default: "BUG_DELETE_NOT_PERSISTED,BUG_LOCKOUT_THRESHOLD_WRONG,FLAKY_WIDGET_LATENCY,FLAKY_UNSORTED_ORDER,ENV_HEALTH_FAILING"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHON_VERSION: "3.14"
+
+jobs:
+  test:
+    name: Lint and tests (clean app)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      # This job never calls an LLM, so it needs no secret.
+      TESTMU_CLASSIFY: "0"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Install Chromium for Playwright
+        run: python -m playwright install --with-deps chromium
+
+      - name: Lint
+        run: python -m ruff check .
+
+      - name: prompts.md matches the prompt files
+        run: python -m scripts.build_prompts_md --check
+
+      - name: Unit tests
+        run: python -m pytest tests/unit
+        env:
+          TESTMU_RUN_ID: ci-unit
+
+      - name: API tests
+        run: python -m pytest tests/api
+        env:
+          TESTMU_RUN_ID: ci-api
+
+      - name: UI tests
+        run: python -m pytest tests/ui
+        env:
+          TESTMU_RUN_ID: ci-ui
+
+      - name: Traceability
+        if: always()
+        continue-on-error: true
+        run: python -m scripts.build_traceability --run ci-ui && cp docs/traceability.md reports/
+
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: reports/
+          retention-days: 14
+
+  fault-demo:
+    name: Fault demo with LLM classification
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      FAULTS: ${{ inputs.faults }}
+      LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+      LLM_BASE_URL: https://api.groq.com/openai/v1
+      LLM_MODEL: openai/gpt-oss-120b
+      TESTMU_RUN_ID: ci-fault-demo
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          python -m playwright install --with-deps chromium
+
+      - name: Tests with injected faults (failures are expected)
+        run: |
+          if [ -z "$LLM_API_KEY" ]; then
+            echo "::notice::No LLM_API_KEY secret: running the faults without classification."
+            export TESTMU_CLASSIFY=0
+          else
+            export TESTMU_CLASSIFY=1
+          fi
+          python -m pytest tests/ui tests/api --reruns 2 ||
+            echo "::notice::Tests failed, as expected with faults: $FAULTS"
+
+      - name: Upload classified report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fault-demo-report
+          path: reports/run-ci-fault-demo/
+          retention-days: 14
