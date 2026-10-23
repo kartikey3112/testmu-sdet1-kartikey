@@ -1,0 +1,144 @@
+{
+  "run_id": "eval-20261022T200611Z-flaky",
+  "generated_at_utc": "2026-10-23T07:17:20Z",
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b",
+  "prompt_version": "v1",
+  "prompt_sha256": "2406cab727e34d08b0e8b260be28cae422e6eafd61abfa47afccafea1a835327",
+  "temperature": 0.0,
+  "run_summary": {
+    "total": 37,
+    "failed": 5,
+    "by_bucket": {
+      "flaky": 4,
+      "real_bug": 1
+    }
+  },
+  "classifications": [
+    {
+      "test_id": "tests/ui/dashboard/test_dashboard.py::test_total_test_cases_widget_loads[chromium]",
+      "case_id": "DASH-001",
+      "bucket": "flaky",
+      "confidence": 0.92,
+      "evidence": [
+        "signals.passed_on_rerun:true",
+        "signals.http_5xx_seen:false",
+        "attempts[0].error.message:\"Locator expected to have attribute 'loaded'\""
+      ],
+      "reasoning": "Rule 1 applied: passed_on_rerun is true and no 5xx seen, so flaky.",
+      "suggested_next_action": "Add explicit wait or retry logic for the widget load and re‑run the test.",
+      "final_outcome": "passed",
+      "failed_attempts": 1,
+      "attempts": 2
+    },
+    {
+      "test_id": "tests/ui/dashboard/test_dashboard.py::test_date_from_after_date_to_puts_recent_runs_in_error[chromium]",
+      "case_id": "DASH-002",
+      "bucket": "flaky",
+      "confidence": 0.92,
+      "evidence": [
+        "signals.passed_on_rerun:true",
+        "signals.http_5xx_seen:false",
+        "attempts[0].error.message:\"Locator expected to have attribute 'error'\""
+      ],
+      "reasoning": "Rule 1 applied: passed_on_rerun is true and no 5xx seen, so flaky.",
+      "suggested_next_action": "Stabilize the date filter UI (e.g., wait for options to load) and re‑run.",
+      "final_outcome": "passed",
+      "failed_attempts": 1,
+      "attempts": 2
+    },
+    {
+      "test_id": "tests/ui/dashboard/test_dashboard.py::test_pass_rate_shows_latest_run[chromium]",
+      "case_id": "DASH-005",
+      "bucket": "real_bug",
+      "confidence": 0.94,
+      "evidence": [
+        "signals.same_error_all_attempts:true",
+        "signals.error_category_heuristic:\"assertion\"",
+        "attempts[0].error.message:\"Locator expected to have attribute 'loaded'\""
+      ],
+      "reasoning": "Rule 4 applied: same error on all attempts, category assertion, no 5xx, indicating a real bug.",
+      "suggested_next_action": "File a bug: pass‑rate widget remains in loading state; investigate widget rendering logic.",
+      "final_outcome": "failed",
+      "failed_attempts": 3,
+      "attempts": 3
+    },
+    {
+      "test_id": "tests/ui/dashboard/test_dashboard.py::test_recent_runs_default_is_latest_ten_newest_first[chromium]",
+      "case_id": "DASH-007",
+      "bucket": "flaky",
+      "confidence": 0.91,
+      "evidence": [
+        "signals.passed_on_rerun:true",
+        "signals.http_5xx_seen:false",
+        "attempts[0].error.message:\"Locator expected to have text '2026-09-21 nightly'\""
+      ],
+      "reasoning": "Rule 1 applied: passed_on_rerun is true and no 5xx seen, so flaky.",
+      "suggested_next_action": "Add a retry or explicit wait for recent‑runs list to settle before asserting its content.",
+      "final_outcome": "passed",
+      "failed_attempts": 2,
+      "attempts": 3
+    },
+    {
+      "test_id": "tests/ui/login/test_login.py::test_session_is_expired_at_exactly_1800_seconds[chromium]",
+      "case_id": "LOGIN-010",
+      "bucket": "flaky",
+      "confidence": 0.9,
+      "evidence": [
+        "signals.passed_on_rerun: false",
+        "signals.same_error_all_attempts: false",
+        "signals.error_category_heuristic: assertion",
+        "attempts[0].error.message: Locator expected to have attribute 'loaded'\\nActual value: loading "
+      ],
+      "reasoning": "Rule 5 matched: attempts failed with differing error details and no 5xx, leading to a flaky classification.",
+      "suggested_next_action": "Add an explicit wait or retry for the widget to reach the 'loaded' state before asserting, then re‑run the test.",
+      "final_outcome": "failed",
+      "failed_attempts": 3,
+      "attempts": 3
+    }
+  ],
+  "llm_calls": [
+    {
+      "chunk": 1,
+      "tests": 4,
+      "attempts": 1,
+      "valid": true,
+      "latency_s": 22.31,
+      "finish_reason": "stop",
+      "usage": {
+        "queue_time": 0.404747022,
+        "prompt_tokens": 3731,
+        "prompt_time": 0.501649379,
+        "completion_tokens": 984,
+        "completion_time": 2.044164001,
+        "total_tokens": 4715,
+        "total_time": 2.5458133800000002,
+        "completion_tokens_details": {
+          "reasoning_tokens": 431
+        }
+      },
+      "errors": []
+    },
+    {
+      "chunk": 2,
+      "tests": 1,
+      "attempts": 1,
+      "valid": true,
+      "latency_s": 18.17,
+      "finish_reason": "stop",
+      "usage": {
+        "queue_time": 0.397586753,
+        "prompt_tokens": 2238,
+        "prompt_time": 0.103238817,
+        "completion_tokens": 586,
+        "completion_time": 1.22182637,
+        "total_tokens": 2824,
+        "total_time": 1.3250651869999999,
+        "completion_tokens_details": {
+          "reasoning_tokens": 413
+        }
+      },
+      "errors": []
+    }
+  ]
+}

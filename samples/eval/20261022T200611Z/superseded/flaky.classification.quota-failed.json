@@ -1,0 +1,131 @@
+{
+  "run_id": "eval-20261022T200611Z-flaky",
+  "generated_at_utc": "2026-10-22T20:29:34Z",
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b",
+  "prompt_version": "v1",
+  "prompt_sha256": "2406cab727e34d08b0e8b260be28cae422e6eafd61abfa47afccafea1a835327",
+  "temperature": 0.0,
+  "run_summary": {
+    "total": 37,
+    "failed": 5,
+    "by_bucket": {
+      "flaky": 3,
+      "real_bug": 1,
+      "unclassified": 1
+    }
+  },
+  "classifications": [
+    {
+      "test_id": "tests/ui/dashboard/test_dashboard.py::test_total_test_cases_widget_loads[chromium]",
+      "case_id": "DASH-001",
+      "bucket": "flaky",
+      "confidence": 0.92,
+      "evidence": [
+        "signals.passed_on_rerun: true",
+        "signals.http_5xx_seen: false"
+      ],
+      "reasoning": "Rule 1 applied: test passed on rerun and no 5xx seen, so classified as flaky.",
+      "suggested_next_action": "Add a more robust wait or retry logic to the widget loading step.",
+      "final_outcome": "passed",
+      "failed_attempts": 1,
+      "attempts": 2
+    },
+    {
+      "test_id": "tests/ui/dashboard/test_dashboard.py::test_date_from_after_date_to_puts_recent_runs_in_error[chromium]",
+      "case_id": "DASH-002",
+      "bucket": "flaky",
+      "confidence": 0.92,
+      "evidence": [
+        "signals.passed_on_rerun: true",
+        "signals.http_5xx_seen: false"
+      ],
+      "reasoning": "Rule 1 applied: test passed on rerun and no 5xx seen, so classified as flaky.",
+      "suggested_next_action": "Add a more robust wait or retry logic to the date filter handling.",
+      "final_outcome": "passed",
+      "failed_attempts": 1,
+      "attempts": 2
+    },
+    {
+      "test_id": "tests/ui/dashboard/test_dashboard.py::test_pass_rate_shows_latest_run[chromium]",
+      "case_id": "DASH-005",
+      "bucket": "real_bug",
+      "confidence": 0.94,
+      "evidence": [
+        "signals.same_error_all_attempts: true",
+        "signals.error_category_heuristic: assertion",
+        "signals.http_5xx_seen: false"
+      ],
+      "reasoning": "Rule 4 applied: same assertion error on all attempts with no 5xx, indicating a real bug.",
+      "suggested_next_action": "File a bug: Pass rate widget remains in loading state; investigate widget data loading.",
+      "final_outcome": "failed",
+      "failed_attempts": 3,
+      "attempts": 3
+    },
+    {
+      "test_id": "tests/ui/dashboard/test_dashboard.py::test_recent_runs_default_is_latest_ten_newest_first[chromium]",
+      "case_id": "DASH-007",
+      "bucket": "flaky",
+      "confidence": 0.91,
+      "evidence": [
+        "signals.passed_on_rerun: true",
+        "signals.http_5xx_seen: false"
+      ],
+      "reasoning": "Rule 1 applied: test passed on rerun and no 5xx seen, so classified as flaky.",
+      "suggested_next_action": "Add explicit wait for recent runs list to stabilize before asserting its content.",
+      "final_outcome": "passed",
+      "failed_attempts": 2,
+      "attempts": 3
+    },
+    {
+      "test_id": "tests/ui/login/test_login.py::test_session_is_expired_at_exactly_1800_seconds[chromium]",
+      "case_id": "LOGIN-010",
+      "bucket": "unclassified",
+      "confidence": null,
+      "evidence": [],
+      "reasoning": "No valid classification after one retry.",
+      "suggested_next_action": "Triage manually.",
+      "final_outcome": "failed",
+      "failed_attempts": 3,
+      "attempts": 3
+    }
+  ],
+  "llm_calls": [
+    {
+      "chunk": 1,
+      "tests": 4,
+      "attempts": 1,
+      "valid": true,
+      "latency_s": 2.26,
+      "finish_reason": "stop",
+      "usage": {
+        "queue_time": 0.051154081,
+        "prompt_tokens": 3731,
+        "prompt_time": 0.256794307,
+        "completion_tokens": 811,
+        "completion_time": 1.710691553,
+        "total_tokens": 4542,
+        "total_time": 1.96748586,
+        "prompt_tokens_details": {
+          "cached_tokens": 1280
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 340
+        }
+      },
+      "errors": []
+    },
+    {
+      "chunk": 2,
+      "tests": 1,
+      "attempts": 0,
+      "valid": false,
+      "latency_s": 0.0,
+      "finish_reason": null,
+      "usage": {},
+      "errors": [
+        "LLM request failed: HTTP 429: {\"error\":{\"message\":\"Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01m5j9gscmet7s84gwfnarz9ke` service tier `on_demand` on tokens per day (TPD): Limit 200000, Used 199164, Requested 3082. Please try again in 16m10.272s. Need more tokens? Upgrad"
+      ]
+    }
+  ]
+}

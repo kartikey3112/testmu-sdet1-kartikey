@@ -1,0 +1,230 @@
+{
+  "run_id": "eval-20261022T200611Z-mixed",
+  "generated_at_utc": "2026-10-23T07:16:23Z",
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b",
+  "prompt_version": "v1",
+  "prompt_sha256": "2406cab727e34d08b0e8b260be28cae422e6eafd61abfa47afccafea1a835327",
+  "temperature": 0.0,
+  "run_summary": {
+    "total": 37,
+    "failed": 9,
+    "by_bucket": {
+      "flaky": 6,
+      "real_bug": 3
+    }
+  },
+  "classifications": [
+    {
+      "test_id": "tests/ui/dashboard/test_dashboard.py::test_total_test_cases_widget_loads[chromium]",
+      "case_id": "DASH-001",
+      "bucket": "flaky",
+      "confidence": 0.92,
+      "evidence": [
+        "signals.passed_on_rerun:true",
+        "signals.http_5xx_seen:false"
+      ],
+      "reasoning": "Rule 1 applied: passed_on_rerun is true and no 5xx seen, so the failure is flaky.",
+      "suggested_next_action": "Add a retry or explicit wait to stabilize the widget loading and re‑run the test.",
+      "final_outcome": "passed",
+      "failed_attempts": 1,
+      "attempts": 2
+    },
+    {
+      "test_id": "tests/ui/dashboard/test_dashboard.py::test_date_from_after_date_to_puts_recent_runs_in_error[chromium]",
+      "case_id": "DASH-002",
+      "bucket": "flaky",
+      "confidence": 0.92,
+      "evidence": [
+        "signals.passed_on_rerun:true",
+        "signals.http_5xx_seen:false"
+      ],
+      "reasoning": "Rule 1 applied: passed_on_rerun is true and no 5xx seen, indicating flakiness.",
+      "suggested_next_action": "Introduce a wait for the date filter to settle or retry the step to reduce nondeterminism.",
+      "final_outcome": "passed",
+      "failed_attempts": 1,
+      "attempts": 2
+    },
+    {
+      "test_id": "tests/ui/dashboard/test_dashboard.py::test_pass_rate_shows_latest_run[chromium]",
+      "case_id": "DASH-005",
+      "bucket": "flaky",
+      "confidence": 0.78,
+      "evidence": [
+        "attempts[0].error.message:\"Locator expected to have attribute 'loaded'...\"",
+        "attempts[2].error.message:\"assert '100.0%' == '87.5%'\"",
+        "signals.same_error_all_attempts:false"
+      ],
+      "reasoning": "Rule 5 applied: attempts failed with different messages and no 5xx, pointing to a flaky test.",
+      "suggested_next_action": "Investigate timing/race conditions on the pass‑rate widget and add appropriate waits or retries.",
+      "final_outcome": "failed",
+      "failed_attempts": 3,
+      "attempts": 3
+    },
+    {
+      "test_id": "tests/ui/dashboard/test_dashboard.py::test_recent_runs_default_is_latest_ten_newest_first[chromium]",
+      "case_id": "DASH-007",
+      "bucket": "flaky",
+      "confidence": 0.78,
+      "evidence": [
+        "attempts[0].error.message:\"Locator expected to have attribute 'loaded'...\"",
+        "attempts[1].error.message:\"Locator expected to have have text '2026-09-21 nightly'\"",
+        "attempts[2].error.message:\"Locator expected to have attribute 'loaded'...\""
+      ],
+      "reasoning": "Rule 5 applied: multiple distinct assertion failures without 5xx indicate flakiness.",
+      "suggested_next_action": "Add stabilization (e.g., wait for recent‑runs list to load) and consider retry logic for this UI test.",
+      "final_outcome": "failed",
+      "failed_attempts": 3,
+      "attempts": 3
+    },
+    {
+      "test_id": "tests/ui/dashboard/test_dashboard.py::test_same_day_date_range_returns_that_run[chromium]",
+      "case_id": "DASH-009",
+      "bucket": "flaky",
+      "confidence": 0.92,
+      "evidence": [
+        "signals.passed_on_rerun:true",
+        "signals.http_5xx_seen:false",
+        "attempts[0].error.message:\"Locator expected to have attribute 'loaded'\""
+      ],
+      "reasoning": "Rule 1 matched (passed_on_rerun true and no 5xx seen).",
+      "suggested_next_action": "Add a more robust wait or retry for the widget to reach the loaded state.",
+      "final_outcome": "passed",
+      "failed_attempts": 1,
+      "attempts": 2
+    },
+    {
+      "test_id": "tests/ui/login/test_login.py::test_session_is_expired_at_exactly_1800_seconds[chromium]",
+      "case_id": "LOGIN-010",
+      "bucket": "flaky",
+      "confidence": 0.92,
+      "evidence": [
+        "signals.passed_on_rerun:true",
+        "signals.http_5xx_seen:false",
+        "attempts[0].error.message:\"Locator expected to have attribute 'loaded'\""
+      ],
+      "reasoning": "Rule 1 matched (passed_on_rerun true and no 5xx seen).",
+      "suggested_next_action": "Introduce explicit wait for session expiration indicator before asserting.",
+      "final_outcome": "passed",
+      "failed_attempts": 1,
+      "attempts": 2
+    },
+    {
+      "test_id": "tests/ui/login/test_login.py::test_fifth_consecutive_failure_locks_the_account[chromium]",
+      "case_id": "LOGIN-012",
+      "bucket": "real_bug",
+      "confidence": 0.78,
+      "evidence": [
+        "signals.same_error_all_attempts:true",
+        "signals.error_category_heuristic:assertion",
+        "attempts[0].error.message:\"assert 401 == 423\""
+      ],
+      "reasoning": "Rule 4 matched (same assertion error across attempts, category assertion, no 5xx).",
+      "suggested_next_action": "File a bug: lockout endpoint returns 401 instead of expected 423 after consecutive failures.",
+      "final_outcome": "failed",
+      "failed_attempts": 3,
+      "attempts": 3
+    },
+    {
+      "test_id": "tests/ui/login/test_login.py::test_correct_password_is_refused_while_locked[chromium]",
+      "case_id": "LOGIN-013",
+      "bucket": "real_bug",
+      "confidence": 0.78,
+      "evidence": [
+        "signals.same_error_all_attempts:true",
+        "signals.error_category_heuristic:assertion",
+        "attempts[0].error.message:\"assert 303 == 423\""
+      ],
+      "reasoning": "Rule 4 matched (consistent assertion error, category assertion, no 5xx).",
+      "suggested_next_action": "File a bug: locked account returns 303 instead of expected 423 for incorrect password.",
+      "final_outcome": "failed",
+      "failed_attempts": 3,
+      "attempts": 3
+    },
+    {
+      "test_id": "tests/api/test_api.py::test_admin_deletes_a_test_case",
+      "case_id": "API-009",
+      "bucket": "real_bug",
+      "confidence": 0.94,
+      "evidence": [
+        "signals.same_error_all_attempts: true",
+        "signals.error_category_heuristic: assertion",
+        "attempts[0].error.message: Expected 404, got 200: {\"id\":25,...\"",
+        "attempts[0].api_last_exchange.status: 200"
+      ],
+      "reasoning": "Rule 4 matched: all attempts had the same assertion error, category is assertion, and no 5xx seen, leading to a real bug classification.",
+      "suggested_next_action": "File a bug: the API returns 200 instead of the expected 404 for a deleted test case, causing the assertion to fail.",
+      "final_outcome": "failed",
+      "failed_attempts": 3,
+      "attempts": 3
+    }
+  ],
+  "llm_calls": [
+    {
+      "chunk": 1,
+      "tests": 4,
+      "attempts": 1,
+      "valid": true,
+      "latency_s": 2.9,
+      "finish_reason": "stop",
+      "usage": {
+        "queue_time": 0.333374235,
+        "prompt_tokens": 3932,
+        "prompt_time": 0.191460313,
+        "completion_tokens": 1037,
+        "completion_time": 2.211418262,
+        "total_tokens": 4969,
+        "total_time": 2.402878575,
+        "completion_tokens_details": {
+          "reasoning_tokens": 482
+        }
+      },
+      "errors": []
+    },
+    {
+      "chunk": 2,
+      "tests": 4,
+      "attempts": 1,
+      "valid": true,
+      "latency_s": 16.5,
+      "finish_reason": "stop",
+      "usage": {
+        "queue_time": 0.398591039,
+        "prompt_tokens": 4056,
+        "prompt_time": 0.184905967,
+        "completion_tokens": 1100,
+        "completion_time": 2.411544622,
+        "total_tokens": 5156,
+        "total_time": 2.596450589,
+        "prompt_tokens_details": {
+          "cached_tokens": 1280
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 584
+        }
+      },
+      "errors": []
+    },
+    {
+      "chunk": 3,
+      "tests": 1,
+      "attempts": 1,
+      "valid": true,
+      "latency_s": 17.85,
+      "finish_reason": "stop",
+      "usage": {
+        "queue_time": 0.211584104,
+        "prompt_tokens": 2741,
+        "prompt_time": 0.118515459,
+        "completion_tokens": 542,
+        "completion_time": 1.118664675,
+        "total_tokens": 3283,
+        "total_time": 1.237180134,
+        "completion_tokens_details": {
+          "reasoning_tokens": 366
+        }
+      },
+      "errors": []
+    }
+  ]
+}
