@@ -34,6 +34,31 @@ class LLMError(RuntimeError):
     pass
 
 
+class LLMInvalidJSONError(LLMError):
+    """The provider's JSON mode rejected the model's output (Groq: 400 json_validate_failed).
+
+    `failed_generation` is what the model actually wrote, so the caller can treat it like any
+    other invalid answer and retry with the error included.
+    """
+
+    def __init__(self, message: str, failed_generation: str) -> None:
+        super().__init__(message)
+        self.failed_generation = failed_generation
+
+
+def _invalid_json_error(response: httpx.Response) -> LLMInvalidJSONError | None:
+    if response.status_code != 400:
+        return None
+    try:
+        error = response.json()["error"]
+    except (ValueError, KeyError, TypeError):
+        return None
+    if error.get("code") != "json_validate_failed":
+        return None
+    return LLMInvalidJSONError(error.get("message", "json_validate_failed"),
+                               error.get("failed_generation") or "")
+
+
 class LLMQuotaError(LLMError):
     """The provider's quota needs a long wait (e.g. Groq's tokens-per-day limit)."""
 
@@ -150,6 +175,9 @@ def chat(messages: list[dict[str, str]], *, config: LLMConfig | None = None,
                         latency_s=round(time.monotonic() - started, 2),
                         finish_reason=body["choices"][0].get("finish_reason"),
                     )
+                invalid_json = _invalid_json_error(response)
+                if invalid_json is not None:
+                    raise invalid_json
                 retryable = _is_retryable(response)
                 wait = requested_wait(response)
                 if retryable and wait is not None and wait > GIVE_UP_AFTER_S:

@@ -167,3 +167,9 @@ These are choices the brief left open. They are written here so the test-generat
   - **Main job** (push and pull request): ruff, a `prompts.md` consistency check, then unit, API and UI tests against the clean app. Reports and traceability are uploaded as artifacts. `TESTMU_CLASSIFY=0`, so it never needs `LLM_API_KEY`.
   - **`fault-demo` job:** `workflow_dispatch` only. It runs a chosen fault set with `--reruns 2` and classifies only if the `LLM_API_KEY` secret exists; otherwise it posts a notice. It uploads the classified report.
 - **Why:** the main job must be green and runnable on any fork with no secrets. LLM calls cost free-tier quota (see D23), so they only run when someone asks for them.
+
+## D25. Provider-side JSON rejection counts as an invalid answer (one retry)
+
+- **What happened (2026-10-23, first mixed-scenario run):** Groq's JSON mode rejected the model's output for one chunk with HTTP 400 `json_validate_failed`, returning the broken text as `failed_generation`. The client treated every 400 as final, so the chunk's 4 tests became `unclassified` with no retry. That broke our own rule: invalid JSON gets one retry with the error.
+- **Decision:** the client raises `LLMInvalidJSONError` carrying `failed_generation`. `classify_chunk` treats it like any other invalid answer: one retry with the broken output and the error, then `unclassified`. Unit tests cover both paths.
+- **Evidence kept:** the run before the fix is in `reports/run-eval-20261022T200611Z-mixed-before-json-fix/`. The evaluation's mixed scenario was re-run after the fix, as a new sample of tests and classification. Both are reported.

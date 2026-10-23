@@ -32,6 +32,7 @@ from ai.llm_client import (
     ChatResult,
     LLMConfigError,
     LLMError,
+    LLMInvalidJSONError,
     LLMQuotaError,
     chat,
     load_llm_config,
@@ -200,8 +201,18 @@ def classify_chunk(system_prompt: str, request: dict[str, Any], chunk_index: int
     ]
     tests = request["tests"]
     extra = {"max_completion_tokens": MAX_COMPLETION_TOKENS}
-    result = chat_fn(messages, temperature=TEMPERATURE, json_mode=True, extra=extra,
-                     **chat_kwargs)
+
+    def ask(msgs: list[dict[str, str]]) -> ChatResult:
+        try:
+            return chat_fn(msgs, temperature=TEMPERATURE, json_mode=True, extra=extra,
+                           **chat_kwargs)
+        except LLMInvalidJSONError as exc:
+            # The provider rejected the model's JSON itself. Treat what the model wrote like
+            # any other invalid answer, so it gets the same single retry.
+            return ChatResult(content=exc.failed_generation, model="", usage={}, raw={},
+                              attempts=1, latency_s=0.0, finish_reason="json_validate_failed")
+
+    result = ask(messages)
     valid, problems = validate_response(result.content, tests)
     attempts, latency, usage = 1, result.latency_s, dict(result.usage)
     finish_reason = result.finish_reason
@@ -214,8 +225,7 @@ def classify_chunk(system_prompt: str, request: dict[str, Any], chunk_index: int
                 + "\n- ".join(describe(problems))
                 + "\nReturn the complete corrected JSON object for all tests, and nothing else."},
         ]
-        retry = chat_fn(retry_messages, temperature=TEMPERATURE, json_mode=True, extra=extra,
-                        **chat_kwargs)
+        retry = ask(retry_messages)
         retry_valid, retry_problems = validate_response(retry.content, tests)
         valid = {**valid, **retry_valid}
         problems = [p for p in retry_problems if p[0] not in valid]

@@ -149,3 +149,33 @@ def test_quota_exhausted_raises_when_asked(tmp_path, monkeypatch) -> None:
         classify.classify_run(tmp_path, chat_fn=quota_then_never, raise_on_quota=True)
 
     assert not (tmp_path / "classification.json").exists()
+
+
+def test_provider_json_rejection_gets_the_same_single_retry() -> None:
+    """Groq's JSON mode can reject output itself (HTTP 400 json_validate_failed)."""
+    calls: list[list[dict[str, str]]] = []
+
+    def chat(messages: list[dict[str, str]], **_: Any) -> ChatResult:
+        calls.append(messages)
+        if len(calls) == 1:
+            raise classify.LLMInvalidJSONError("json_validate_failed", '{"classifications": [')
+        return ChatResult(content=as_json(answer()), model="fixture", usage={}, raw={},
+                          attempts=1, latency_s=0.0, finish_reason="stop")
+
+    valid, call = classify.classify_chunk("prompt", {"tests": [TEST]}, 1, chat_fn=chat)
+
+    assert len(calls) == 2
+    assert calls[1][-2]["content"] == '{"classifications": ['  # the model's broken output
+    assert TEST["test_id"] in valid
+    assert call.valid
+
+
+def test_provider_json_rejection_twice_leaves_test_unclassified() -> None:
+    def chat(messages: list[dict[str, str]], **_: Any) -> ChatResult:
+        raise classify.LLMInvalidJSONError("json_validate_failed", "{")
+
+    valid, call = classify.classify_chunk("prompt", {"tests": [TEST]}, 1, chat_fn=chat)
+
+    assert valid == {}
+    assert call.attempts == 2
+    assert not call.valid
