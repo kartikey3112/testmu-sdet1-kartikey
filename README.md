@@ -84,7 +84,7 @@ off with `TESTMU_CLASSIFY=0`.
 | Generated test cases | [`generated/*.json`](generated/), [`generated/gherkin/`](generated/gherkin/), raw responses and validation reports in [`generated/raw/`](generated/raw/) |
 | Automated cases and traceability | [`tests/`](tests/), [`docs/traceability.md`](docs/traceability.md) |
 | LLM integration (Option B) and the reason for choosing it | [`ai/classifier/`](ai/classifier/) (rationale in [`ai/classifier/__init__.py`](ai/classifier/__init__.py)) |
-| Sample output with the LLM response inside the test report | [`samples/`](samples/) |
+| Sample output with the LLM response inside the test report | [`samples/eval-20261022T200611Z-mixed/`](samples/eval-20261022T200611Z-mixed/README.md) |
 | Classifier evaluation | [`samples/eval/`](samples/eval/) |
 | AI usage | [`ai-usage-log.md`](ai-usage-log.md) |
 | Decisions and trade-offs | [`docs/decisions.md`](docs/decisions.md), [`docs/prompt-design.md`](docs/prompt-design.md) |
@@ -107,23 +107,50 @@ off with `TESTMU_CLASSIFY=0`.
 
 **Flaky Test Classifier (Task 3)**
 
-TODO: measure. The evaluation is in progress; the numbers will be copied here from
-`samples/eval/` once all scenarios are classified.
+Evaluated with `scripts/eval_classifier.py` on fault scenarios whose true cause is known
+(`app/faults.py`), with `--reruns 2`, `openai/gpt-oss-120b` and prompt `classifier.v1`.
+Full report: [`samples/eval/`](samples/eval/README.md).
+
+| Scenario | Scored failures | Correct |
+|---|---|---|
+| real bugs only | 4 | 4 |
+| environment issues only | 37 | 37 |
+| flaky faults only | 5 | 4 |
+| mixed (bugs + flaky, with `/health` failing as a trap) | 9 | 8 |
+| **overall** | **55** | **53 (0.964)** |
+
+- **Without the environment scenario,** whose 37 failures are easy 5xx/connection cases:
+  **16/18 (0.889).** It's one run per scenario, so expect variation.
+- **Both misses are the same test** (DASH-005, the pass-rate widget). In each case, one run
+  could not tell "slow every time" from "broken": three identical timeouts looked like a
+  real bug, and a real bug mixed with random latency looked flaky. Run history fixes this
+  (see "next").
+- **No bug or flaky failure was blamed on the environment** in the mixed run, even though
+  `/health` was failing throughout.
+- **Two attempts didn't count and are kept as evidence:** one hit Groq's daily token limit
+  (D23), and one exposed a client bug, Groq rejecting JSON without our retry (D25, fixed).
+
+**Sample output with the LLM response inside the test report:**
+[`samples/eval-20261022T200611Z-mixed/`](samples/eval-20261022T200611Z-mixed/README.md):
+the self-contained `report.html`, `classification.json`/`.md`, and screenshots.
 
 ## Key decisions
 
 All in [`docs/decisions.md`](docs/decisions.md). The ones most worth reading:
 own app under test with fault injection (D2), test clock instead of waiting (D9), schemas
 written on the test side (D13), JSON mode plus our own validation (D17), payload compaction
-and code-computed signals (D20), never guessing a label (D21), quota handling (D23).
+and code-computed signals (D20), never guessing a label (D21), quota handling (D23), retrying provider-rejected JSON (D25).
 
 ## Known limitations
 
 - **Free-tier quota.** Groq's free tier allows 200,000 tokens per day for this model. Test
-  generation for all prompt versions used about 110k (measured). The first evaluation pass
-  had used about 103k by the time it reached the limit, 91k of it on the scenario where every
-  test fails. Running everything in one day hits the limit (see D23); the code stops cleanly
-  and the evaluation can resume.
+  generation for all prompt versions used about 110k (measured). The evaluation's
+  environment scenario alone used about 91k, because every test fails. Test generation and
+  the evaluation don't fit in the same day; the code stops cleanly on the daily limit and
+  `--reuse` resumes the evaluation (D23).
+- **Classifier accuracy is from small samples:** 55 scored failures, one run per scenario,
+  and one prompt version. The two misses point at a real blind spot, not noise (see
+  Results).
 - **Temperature 0 is not deterministic on Groq.** Re-running a prompt gives the same
   structure and coverage, not the same wording.
 - **One run can't tell a stuck widget from a slow one.** A flaky test that happens to fail

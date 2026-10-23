@@ -1,7 +1,7 @@
 # Submission checklist
 
 Every requirement from the assessment (build brief §2), with the file that proves it.
-✅ done and verified · ⏳ waiting on the classifier evaluation (Groq daily quota, see D23)
+✅ done and verified
 
 ## Task 1: setup and scaffold
 
@@ -31,9 +31,9 @@ Every requirement from the assessment (build brief §2), with the file that prov
 | Feed execution logs to an LLM after a run | ✅ | `ai/classifier/collector.py` → `execution-log.jsonl` → `ai/classifier/classify.py` |
 | Exactly three buckets: real bug, environment issue, flaky | ✅ | `ai/classifier/classify.py` (`Bucket`), `prompts/classifier.v1.md` |
 | Structured report | ✅ | `classification.json` / `classification.md` per run |
-| Real LLM call, not mocked | ✅ | `ai/llm_client.py`; real classifications in `samples/eval/` |
-| Working code | ✅ | CI green; 46 unit tests for payload, redaction, chunking, validation, retry, quota |
-| Sample output with the LLM response inside the test results | ⏳ | `samples/<mixed run>/report.html` + screenshots, after the mixed scenario is classified |
+| Real LLM call, not mocked | ✅ | `ai/llm_client.py`; real classifications in `samples/eval/` (53/55 correct on known-cause faults) |
+| Working code | ✅ | CI green; 52 unit tests for payload, redaction, chunking, validation, retry, quota, provider errors |
+| Sample output with the LLM response inside the test results | ✅ | `samples/eval-20261022T200611Z-mixed/report.html` (LLM summary, "LLM bucket" column, per-test block) + `report-llm-summary.png`, `report-test-classification.png` |
 | Code comment: why Option B over Option A | ✅ | `ai/classifier/__init__.py` (module docstring) |
 
 ## Submission contents
@@ -42,8 +42,8 @@ Every requirement from the assessment (build brief §2), with the file that prov
 |---|---|---|
 | `prompts.md` | ✅ | `prompts.md` |
 | Generated test cases | ✅ | `generated/` |
-| LLM integration code and sample output | ✅ / ⏳ | code: `ai/`; sample output: pending as above |
-| `README.md`: how to run it and what to build next | ✅ / ⏳ | `README.md` (classifier numbers marked `TODO: measure` until the evaluation finishes) |
+| LLM integration code and sample output | ✅ | code: `ai/`; sample: `samples/eval-20261022T200611Z-mixed/`; evaluation: `samples/eval/` |
+| `README.md`: how to run it and what to build next | ✅ | `README.md` ("How to run each part", "Results (measured)", "What I'd build next") |
 | `ai-usage-log.md`: every AI tool, task, output | ✅ | `ai-usage-log.md` (Kartikey's own fields marked `<!-- Kartikey to fill -->` where not yet filled) |
 
 ## Verification done in Phase 7
