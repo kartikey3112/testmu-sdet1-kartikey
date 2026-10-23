@@ -29,9 +29,9 @@ jobs:
       # This job never calls an LLM, so it needs no secret.
       TESTMU_CLASSIFY: "0"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: pip
@@ -70,7 +70,7 @@ jobs:
 
       - name: Upload reports
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: test-reports
           path: reports/
@@ -88,9 +88,9 @@ jobs:
       LLM_MODEL: openai/gpt-oss-120b
       TESTMU_RUN_ID: ci-fault-demo
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: pip
@@ -113,7 +113,7 @@ jobs:
 
       - name: Upload classified report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: fault-demo-report
           path: reports/run-ci-fault-demo/
